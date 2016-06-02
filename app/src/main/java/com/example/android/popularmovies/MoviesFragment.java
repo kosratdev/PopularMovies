@@ -15,6 +15,10 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,7 +57,7 @@ public class MoviesFragment extends Fragment {
     /**
      * update movie posters by getting data from themoviedb API
      */
-    private void updateMovies(){
+    private void updateMovies() {
         FetchMoviesTask moviesTask = new FetchMoviesTask();
         moviesTask.execute();
     }
@@ -112,9 +116,59 @@ public class MoviesFragment extends Fragment {
     /**
      * getting movie data from themoviedb API by creating a new thread to work in background.
      */
-    public class FetchMoviesTask extends AsyncTask<Void, Void, String[]>{
+    public class FetchMoviesTask extends AsyncTask<Void, Void, String[]> {
 
         private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
+
+        /**
+         * <p>Take the String representing the complete movie in JSON Format and
+         * pull out the data we need to construct the Strings needed for the wireframes.
+         * </p>
+         * <p>Fortunately parsing is easy:  constructor takes the JSON string and converts it
+         * into an Object hierarchy for us.</p>
+         * @param movieJsonStr is a json string.
+         * @return an array of string
+         */
+        private String[] getMovieDataFromJson(String movieJsonStr)
+                throws JSONException {
+
+            final String BASE_POSTER_PATH = "http://image.tmdb.org/t/p/w185/";
+
+            // These are the names of the JSON objects that need to be extracted.
+            final String TMD_LIST = "results";
+            final String TMD_TITLE = "original_title";
+            final String TMD_POSTER = "poster_path";
+            final String TMD_OVERVIEW = "overview";
+            final String TMD_RATE = "vote_average";
+            final String TMD_RELEASE = "release_date";
+
+            JSONObject movieJson = new JSONObject(movieJsonStr);
+            JSONArray movieArray = movieJson.getJSONArray(TMD_LIST);
+
+            String[] resultStrs = new String[movieArray.length()];
+
+            for (int i = 0; i < movieArray.length(); i++) {
+                String title;
+                String poster;
+                String overview;
+                String rate;
+                String release;
+
+                // Get the JSON object representing a movie
+                JSONObject aMovie = movieArray.getJSONObject(i);
+
+                // Get all properties of the movie.
+                title = aMovie.getString(TMD_TITLE);
+                poster = BASE_POSTER_PATH + aMovie.getString(TMD_POSTER);
+                overview = aMovie.getString(TMD_OVERVIEW);
+                rate = aMovie.getString(TMD_RATE);
+                release = aMovie.getString(TMD_RELEASE);
+
+                resultStrs[i] = title + " - " + poster + " - " + overview + " - " + rate + " - " + release;
+            }
+            return resultStrs;
+
+        }
 
         @Override
         protected String[] doInBackground(Void... params) {
@@ -127,11 +181,11 @@ public class MoviesFragment extends Fragment {
             // Will contain the raw JSON response as a string.
             String movieJsonStr = null;
 
-            String sortType="popular";
+            String sortType = "popular";
             try {
                 // Construct the URL for the OpenWeatherMap query
                 // Possible parameters are avaiable at http://themoviedb.org/
-                final String MOVIE_BASE_URL ="https://api.themoviedb.org/3/movie/"+sortType;
+                final String MOVIE_BASE_URL = "https://api.themoviedb.org/3/movie/" + sortType;
 
                 final String API_PARAM = "api_key";
 
@@ -169,7 +223,6 @@ public class MoviesFragment extends Fragment {
                     return null;
                 }
                 movieJsonStr = builder.toString();
-                Log.i(LOG_TAG,movieJsonStr);
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
                 // If the code didn't successfully get the weather data, there's no point in attemping
@@ -188,14 +241,20 @@ public class MoviesFragment extends Fragment {
                 }
             }
 
-//            try {
-//                //return getMovieDataFromJson(movieJsonStr);
-//            } catch (JSONException e) {
-//                Log.e(LOG_TAG, e.getMessage(), e);
-//                e.printStackTrace();
-//            }
 
-            // This will only happen if there was an error getting or parsing the forecast.
+            try {
+                // return getMovieDataFromJson(movieJsonStr);
+                String [] movies = getMovieDataFromJson(movieJsonStr);
+                for (String value : movies){
+                    Log.i(LOG_TAG,value);
+                }
+
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
+                e.printStackTrace();
+            }
+
+            // This will only happen if there was an error getting or parsing the movie.
             return null;
         }
     }
