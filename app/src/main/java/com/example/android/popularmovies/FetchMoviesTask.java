@@ -56,7 +56,7 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
         final String TMD_LIST = "results";
         final String TMD_TITLE = "original_title";
         final String TMD_POSTER = "poster_path";
-        final String TMD_OVERVIEW = "mOverview";
+        final String TMD_OVERVIEW = "overview";
         final String TMD_RATE = "vote_average";
         final String TMD_RELEASE = "release_date";
 
