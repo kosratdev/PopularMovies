@@ -10,10 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,7 +30,9 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -36,6 +40,8 @@ import java.util.Locale;
  * Created by kosrat on 5/30/16.
  */
 public class MoviesFragment extends Fragment {
+    private GridViewAdapter imageAdapter;
+    ArrayList<Movie> movieList = new ArrayList<>();
 
     public MoviesFragment() {
     }
@@ -45,8 +51,10 @@ public class MoviesFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+        imageAdapter = new GridViewAdapter(getActivity(), movieList);
+
         GridView gridview = (GridView) rootView.findViewById(R.id.gridview);
-        gridview.setAdapter(new ImageAdapter(getActivity()));
+        gridview.setAdapter(imageAdapter);
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -70,58 +78,60 @@ public class MoviesFragment extends Fragment {
     /**
      * Grid view image adapter
      */
-    public class ImageAdapter extends BaseAdapter {
-        private Context mContext;
+    public class GridViewAdapter extends ArrayAdapter<Movie> {
 
-        public ImageAdapter(Context c) {
-            mContext = c;
+        /**
+         * This is our own custom constructor (it doesn't mirror a superclass constructor).
+         * The context is used to inflate the layout file, and the List is the data we want
+         * to populate into the lists
+         *
+         * @param context        The current context. Used to inflate the layout file.
+         * @param movieList A List of Movie objects to display in a list
+         */
+
+        public GridViewAdapter(Context context, List<Movie>  movieList) {
+            // Here, we initialize the ArrayAdapter's internal storage for the context and the list.
+            // the second argument is used when the ArrayAdapter is populating a single TextView.
+            // Because this is a custom adapter for two TextViews and an ImageView, the adapter is not
+            // going to use this second argument, so it can be any value. Here, we used 0.
+            super(context, 0, movieList);
         }
 
-        public int getCount() {
-            return mThumbIds.length;
-        }
-
-        public Object getItem(int position) {
-            return null;
-        }
-
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        // create a new ImageView for each item referenced by the Adapter
+        /**
+         * Provides a view for an AdapterView (ListView, GridView, etc.)
+         *
+         * @param position    The AdapterView position that is requesting a view
+         * @param convertView The recycled view to populate.
+         *                    (search online for "android view recycling" to learn more)
+         * @param parent The parent ViewGroup that is used for inflation.
+         * @return The View for the position in the AdapterView.
+         */
+        @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            ImageView imageView;
+            // Gets the AndroidFlavor object from the ArrayAdapter at the appropriate position
+            Movie movie = getItem(position);
+
+            // Adapters recycle views to AdapterViews.
+            // If this is a new View object we're getting, then inflate the layout.
+            // If not, this view already has the layout inflated from a previous call to getView,
+            // and we modify the View widgets as usual.
             if (convertView == null) {
-                // if it's not recycled, initialize some attributes
-                imageView = new ImageView(mContext);
-                imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
-                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                imageView.setPadding(8, 8, 8, 8);
-            } else {
-                imageView = (ImageView) convertView;
+                convertView = LayoutInflater.from(getContext()).inflate(
+                        R.layout.movie_poster, parent, false);
             }
 
-            imageView.setImageResource(mThumbIds[position]);
-            return imageView;
-        }
+            ImageView poster = (ImageView) convertView.findViewById(R.id.poster_imageview);
+            Picasso.with(getContext()).load(movie.poster).into(poster);
 
-        // references to our images
-        private Integer[] mThumbIds = {
-                R.mipmap.ic_launcher, R.mipmap.ic_launcher,
-                R.mipmap.ic_launcher, R.mipmap.ic_launcher,
-                R.mipmap.ic_launcher, R.mipmap.ic_launcher,
-                R.mipmap.ic_launcher, R.mipmap.ic_launcher,
-                R.mipmap.ic_launcher, R.mipmap.ic_launcher,
-                R.mipmap.ic_launcher, R.mipmap.ic_launcher,
-                R.mipmap.ic_launcher, R.mipmap.ic_launcher,
-        };
+
+            return convertView;
+        }
     }
 
     /**
      * getting movie data from themoviedb API by creating a new thread to work in background.
      */
-    public class FetchMoviesTask extends AsyncTask<Void, Void, String[]> {
+    public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
 
         private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
@@ -138,7 +148,7 @@ public class MoviesFragment extends Fragment {
         private Movie[] getMovieDataFromJson(String movieJsonStr)
                 throws JSONException, ParseException {
 
-            final String BASE_POSTER_PATH = "http://image.tmdb.org/t/p/w185/";
+            final String BASE_POSTER_PATH = "http://image.tmdb.org/t/p/w500/";
 
             // These are the names of the JSON objects that need to be extracted.
             final String TMD_LIST = "results";
@@ -191,7 +201,7 @@ public class MoviesFragment extends Fragment {
         }
 
         @Override
-        protected String[] doInBackground(Void... params) {
+        protected Movie[] doInBackground(Void... params) {
 
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
@@ -263,11 +273,11 @@ public class MoviesFragment extends Fragment {
 
 
             try {
-                // return getMovieDataFromJson(movieJsonStr);
-                Movie[] movies = getMovieDataFromJson(movieJsonStr);
-                for (Movie value : movies) {
-                    Log.i(LOG_TAG, value.poster + "\n");
-                }
+                return getMovieDataFromJson(movieJsonStr);
+//                Movie[] movies = getMovieDataFromJson(movieJsonStr);
+//                for (Movie value : movies) {
+//                    Log.i(LOG_TAG, value.poster + "\n");
+//                }
 
             } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
@@ -278,6 +288,17 @@ public class MoviesFragment extends Fragment {
 
             // This will only happen if there was an error getting or parsing the movie.
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Movie[] movies) {
+            if(movies != null){
+                imageAdapter.clear();
+
+                for (Movie movie: movies) {
+                    imageAdapter.add(movie);
+                }
+            }
         }
     }
 }
