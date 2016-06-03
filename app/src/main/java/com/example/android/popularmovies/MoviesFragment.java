@@ -25,6 +25,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * Encapsulates fetching the movies and displaying it as a {@link GridView} layout.
@@ -126,11 +131,12 @@ public class MoviesFragment extends Fragment {
          * </p>
          * <p>Fortunately parsing is easy:  constructor takes the JSON string and converts it
          * into an Object hierarchy for us.</p>
+         *
          * @param movieJsonStr is a json string.
          * @return an array of string
          */
-        private String[] getMovieDataFromJson(String movieJsonStr)
-                throws JSONException {
+        private Movie[] getMovieDataFromJson(String movieJsonStr)
+                throws JSONException, ParseException {
 
             final String BASE_POSTER_PATH = "http://image.tmdb.org/t/p/w185/";
 
@@ -145,14 +151,14 @@ public class MoviesFragment extends Fragment {
             JSONObject movieJson = new JSONObject(movieJsonStr);
             JSONArray movieArray = movieJson.getJSONArray(TMD_LIST);
 
-            String[] resultStrs = new String[movieArray.length()];
+            Movie[] allMovies = new Movie[movieArray.length()];
 
             for (int i = 0; i < movieArray.length(); i++) {
                 String title;
                 String poster;
                 String overview;
-                String rate;
-                String release;
+                float rate;
+                Calendar release;
 
                 // Get the JSON object representing a movie
                 JSONObject aMovie = movieArray.getJSONObject(i);
@@ -161,13 +167,27 @@ public class MoviesFragment extends Fragment {
                 title = aMovie.getString(TMD_TITLE);
                 poster = BASE_POSTER_PATH + aMovie.getString(TMD_POSTER);
                 overview = aMovie.getString(TMD_OVERVIEW);
-                rate = aMovie.getString(TMD_RATE);
-                release = aMovie.getString(TMD_RELEASE);
+                rate = Float.parseFloat(aMovie.getString(TMD_RATE));
+                release = getCalendar(aMovie.getString(TMD_RELEASE));
 
-                resultStrs[i] = title + " - " + poster + " - " + overview + " - " + rate + " - " + release;
+                allMovies[i] = new Movie(title, poster, overview, rate, release);
             }
-            return resultStrs;
 
+            return allMovies;
+
+        }
+
+        /**
+         * It is a converter to convert string to calendar
+         * @param date is a string date
+         * @return a calendar instance
+         * @throws ParseException
+         */
+        private Calendar getCalendar(String date) throws ParseException {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(dateFormat.parse(date));
+            return cal;
         }
 
         @Override
@@ -244,13 +264,15 @@ public class MoviesFragment extends Fragment {
 
             try {
                 // return getMovieDataFromJson(movieJsonStr);
-                String [] movies = getMovieDataFromJson(movieJsonStr);
-                for (String value : movies){
-                    Log.i(LOG_TAG,value);
+                Movie[] movies = getMovieDataFromJson(movieJsonStr);
+                for (Movie value : movies) {
+                    Log.i(LOG_TAG, value.poster + "\n");
                 }
 
             } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
+                e.printStackTrace();
+            } catch (ParseException e) {
                 e.printStackTrace();
             }
 
