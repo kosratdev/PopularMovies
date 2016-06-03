@@ -1,46 +1,22 @@
 package com.example.android.popularmovies;
 
-import android.content.Context;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.squareup.picasso.Picasso;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * Encapsulates fetching the movies and displaying it as a {@link GridView} layout.
  * Created by kosrat on 5/30/16.
  */
 public class MoviesFragment extends Fragment {
-    private GridViewAdapter imageAdapter;
+    private GridViewAdapter mMovieAdapter;
     ArrayList<Movie> movieList = new ArrayList<>();
 
     public MoviesFragment() {
@@ -51,10 +27,10 @@ public class MoviesFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        imageAdapter = new GridViewAdapter(getActivity(), movieList);
+        mMovieAdapter = new GridViewAdapter(getActivity(), movieList);
 
         GridView gridview = (GridView) rootView.findViewById(R.id.gridview);
-        gridview.setAdapter(imageAdapter);
+        gridview.setAdapter(mMovieAdapter);
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -71,234 +47,8 @@ public class MoviesFragment extends Fragment {
      * update movie posters by getting data from themoviedb API
      */
     private void updateMovies() {
-        FetchMoviesTask moviesTask = new FetchMoviesTask();
+        FetchMoviesTask moviesTask = new FetchMoviesTask(mMovieAdapter);
         moviesTask.execute();
     }
 
-    /**
-     * Grid view image adapter
-     */
-    public class GridViewAdapter extends ArrayAdapter<Movie> {
-
-        /**
-         * This is our own custom constructor (it doesn't mirror a superclass constructor).
-         * The context is used to inflate the layout file, and the List is the data we want
-         * to populate into the lists
-         *
-         * @param context        The current context. Used to inflate the layout file.
-         * @param movieList A List of Movie objects to display in a list
-         */
-
-        public GridViewAdapter(Context context, List<Movie>  movieList) {
-            // Here, we initialize the ArrayAdapter's internal storage for the context and the list.
-            // the second argument is used when the ArrayAdapter is populating a single TextView.
-            // Because this is a custom adapter for two TextViews and an ImageView, the adapter is not
-            // going to use this second argument, so it can be any value. Here, we used 0.
-            super(context, 0, movieList);
-        }
-
-        /**
-         * Provides a view for an AdapterView (ListView, GridView, etc.)
-         *
-         * @param position    The AdapterView position that is requesting a view
-         * @param convertView The recycled view to populate.
-         *                    (search online for "android view recycling" to learn more)
-         * @param parent The parent ViewGroup that is used for inflation.
-         * @return The View for the position in the AdapterView.
-         */
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            // Gets the AndroidFlavor object from the ArrayAdapter at the appropriate position
-            Movie movie = getItem(position);
-
-            // Adapters recycle views to AdapterViews.
-            // If this is a new View object we're getting, then inflate the layout.
-            // If not, this view already has the layout inflated from a previous call to getView,
-            // and we modify the View widgets as usual.
-            if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(
-                        R.layout.movie_poster, parent, false);
-            }
-
-            ImageView poster = (ImageView) convertView.findViewById(R.id.poster_imageview);
-            Picasso.with(getContext()).load(movie.poster).into(poster);
-
-
-            return convertView;
-        }
-    }
-
-    /**
-     * getting movie data from themoviedb API by creating a new thread to work in background.
-     */
-    public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
-
-        private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
-
-        /**
-         * <p>Take the String representing the complete movie in JSON Format and
-         * pull out the data we need to construct the Strings needed for the wireframes.
-         * </p>
-         * <p>Fortunately parsing is easy:  constructor takes the JSON string and converts it
-         * into an Object hierarchy for us.</p>
-         *
-         * @param movieJsonStr is a json string.
-         * @return an array of string
-         */
-        private Movie[] getMovieDataFromJson(String movieJsonStr)
-                throws JSONException, ParseException {
-
-            final String BASE_POSTER_PATH = "http://image.tmdb.org/t/p/w500/";
-
-            // These are the names of the JSON objects that need to be extracted.
-            final String TMD_LIST = "results";
-            final String TMD_TITLE = "original_title";
-            final String TMD_POSTER = "poster_path";
-            final String TMD_OVERVIEW = "overview";
-            final String TMD_RATE = "vote_average";
-            final String TMD_RELEASE = "release_date";
-
-            JSONObject movieJson = new JSONObject(movieJsonStr);
-            JSONArray movieArray = movieJson.getJSONArray(TMD_LIST);
-
-            Movie[] allMovies = new Movie[movieArray.length()];
-
-            for (int i = 0; i < movieArray.length(); i++) {
-                String title;
-                String poster;
-                String overview;
-                float rate;
-                Calendar release;
-
-                // Get the JSON object representing a movie
-                JSONObject aMovie = movieArray.getJSONObject(i);
-
-                // Get all properties of the movie.
-                title = aMovie.getString(TMD_TITLE);
-                poster = BASE_POSTER_PATH + aMovie.getString(TMD_POSTER);
-                overview = aMovie.getString(TMD_OVERVIEW);
-                rate = Float.parseFloat(aMovie.getString(TMD_RATE));
-                release = getCalendar(aMovie.getString(TMD_RELEASE));
-
-                allMovies[i] = new Movie(title, poster, overview, rate, release);
-            }
-
-            return allMovies;
-
-        }
-
-        /**
-         * It is a converter to convert string to calendar
-         * @param date is a string date
-         * @return a calendar instance
-         * @throws ParseException
-         */
-        private Calendar getCalendar(String date) throws ParseException {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(dateFormat.parse(date));
-            return cal;
-        }
-
-        @Override
-        protected Movie[] doInBackground(Void... params) {
-
-            // These two need to be declared outside the try/catch
-            // so that they can be closed in the finally block.
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-
-            // Will contain the raw JSON response as a string.
-            String movieJsonStr = null;
-
-            String sortType = "popular";
-            try {
-                // Construct the URL for the OpenWeatherMap query
-                // Possible parameters are avaiable at http://themoviedb.org/
-                final String MOVIE_BASE_URL = "https://api.themoviedb.org/3/movie/" + sortType;
-
-                final String API_PARAM = "api_key";
-
-                Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
-                        .appendQueryParameter(API_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
-                        .build();
-                Log.i(LOG_TAG, builtUri.toString());
-
-                URL url = new URL(builtUri.toString());
-
-                // Create the request to OpenWeatherMap, and open the connection
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                // Read the input stream into a String
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuilder builder = new StringBuilder();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    return null;
-                }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
-                    builder.append(line).append("\n");
-                }
-
-                if (builder.length() == 0) {
-                    // Stream was empty.  No point in parsing.
-                    return null;
-                }
-                movieJsonStr = builder.toString();
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
-                // to parse it.
-                return null;
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
-                    }
-                }
-            }
-
-
-            try {
-                return getMovieDataFromJson(movieJsonStr);
-//                Movie[] movies = getMovieDataFromJson(movieJsonStr);
-//                for (Movie value : movies) {
-//                    Log.i(LOG_TAG, value.poster + "\n");
-//                }
-
-            } catch (JSONException e) {
-                Log.e(LOG_TAG, e.getMessage(), e);
-                e.printStackTrace();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            // This will only happen if there was an error getting or parsing the movie.
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Movie[] movies) {
-            if(movies != null){
-                imageAdapter.clear();
-
-                for (Movie movie: movies) {
-                    imageAdapter.add(movie);
-                }
-            }
-        }
-    }
 }
