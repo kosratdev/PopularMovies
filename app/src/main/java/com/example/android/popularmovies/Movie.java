@@ -4,19 +4,21 @@ import java.util.Calendar;
 
 /**
  * Created by kosrat on 6/2/16.
+ *
+ * Movie class to store all properties of a Movie
  */
 public class Movie {
-    String title;
-    String poster;
-    String overview;
-    float rating;
-    Calendar realseDate;
+    String mTitle;
+    String mPoster;
+    String mOverview;
+    float mRating;
+    Calendar mRealseDate;
 
     public Movie(String title, String poster, String overview, float rating, Calendar realseDate) {
-        this.title = title;
-        this.poster = poster;
-        this.overview = overview;
-        this.rating = rating;
-        this.realseDate = realseDate;
+        this.mTitle = title;
+        this.mPoster = poster;
+        this.mOverview = overview;
+        this.mRating = rating;
+        this.mRealseDate = realseDate;
     }
 }

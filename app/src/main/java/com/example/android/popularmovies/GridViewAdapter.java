@@ -29,8 +29,8 @@ public class GridViewAdapter extends ArrayAdapter<Movie> {
 
     public GridViewAdapter(Context context, List<Movie> movieList) {
         // Here, we initialize the ArrayAdapter's internal storage for the context and the list.
-        // the second argument is used when the ArrayAdapter is populating a single TextView.
-        // Because this is a custom adapter for two TextViews and an ImageView, the adapter is not
+        // the second argument is used when the ArrayAdapter is populating a single ImageView.
+        // Because this is a custom adapter for an ImageView, the adapter is not
         // going to use this second argument, so it can be any value. Here, we used 0.
         super(context, 0, movieList);
     }
@@ -46,7 +46,7 @@ public class GridViewAdapter extends ArrayAdapter<Movie> {
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        // Gets the AndroidFlavor object from the ArrayAdapter at the appropriate position
+        // Gets the Movie object from the ArrayAdapter at the appropriate position
         Movie movie = getItem(position);
 
         // Adapters recycle views to AdapterViews.
@@ -59,7 +59,9 @@ public class GridViewAdapter extends ArrayAdapter<Movie> {
         }
 
         ImageView poster = (ImageView) convertView.findViewById(R.id.poster_imageview);
-        Picasso.with(getContext()).load(movie.poster).into(poster);
+        // Using Picasso Library for handle image loading and caching
+        // for more info look at Picasso reference http://square.github.io/picasso/
+        Picasso.with(getContext()).load(movie.mPoster).into(poster);
 
 
         return convertView;

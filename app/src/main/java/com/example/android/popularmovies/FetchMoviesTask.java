@@ -22,7 +22,7 @@ import java.util.Locale;
 
 /**
  * Created by kosrat on 6/3/16.
- *
+ * <p/>
  * Getting movie data from themoviedb API by creating a new thread to work in background.
  */
 public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
@@ -31,16 +31,16 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
 
     private GridViewAdapter mMovieAdapter;
 
-    public FetchMoviesTask(GridViewAdapter movieAdapter){
+    public FetchMoviesTask(GridViewAdapter movieAdapter) {
         mMovieAdapter = movieAdapter;
     }
 
     /**
-     * <p>Take the String representing the complete movie in JSON Format and
+     * Take the String representing the complete movie in JSON Format and
      * pull out the data we need to construct the Strings needed for the wireframes.
-     * </p>
-     * <p>Fortunately parsing is easy:  constructor takes the JSON string and converts it
-     * into an Object hierarchy for us.</p>
+     * <p/>
+     * Fortunately parsing is easy:  constructor takes the JSON string and converts it
+     * into an Object hierarchy for us.
      *
      * @param movieJsonStr is a json string.
      * @return an array of string
@@ -48,13 +48,15 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
     private Movie[] getMovieDataFromJson(String movieJsonStr)
             throws JSONException, ParseException {
 
+        // Base image url that is used to get movie posters which is describes in this reference
+        // http://docs.themoviedb.apiary.io/#reference/configuration/configuration/get?console=1
         final String BASE_POSTER_PATH = "http://image.tmdb.org/t/p/w500/";
 
         // These are the names of the JSON objects that need to be extracted.
         final String TMD_LIST = "results";
         final String TMD_TITLE = "original_title";
         final String TMD_POSTER = "poster_path";
-        final String TMD_OVERVIEW = "overview";
+        final String TMD_OVERVIEW = "mOverview";
         final String TMD_RATE = "vote_average";
         final String TMD_RELEASE = "release_date";
 
@@ -89,6 +91,7 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
 
     /**
      * It is a converter to convert string to calendar
+     *
      * @param date is a string date
      * @return a calendar instance
      * @throws ParseException
@@ -113,8 +116,8 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
 
         String sortType = "popular";
         try {
-            // Construct the URL for the OpenWeatherMap query
-            // Possible parameters are avaiable at http://themoviedb.org/
+            // Construct the URL for the TheMovieDb query
+            // Possible parameters are available at https://www.themoviedb.org/documentation/api
             final String MOVIE_BASE_URL = "https://api.themoviedb.org/3/movie/" + sortType;
 
             final String API_PARAM = "api_key";
@@ -126,7 +129,7 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
 
             URL url = new URL(builtUri.toString());
 
-            // Create the request to OpenWeatherMap, and open the connection
+            // Create the request to TheMovieDb, and open the connection
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
@@ -155,7 +158,7 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
             movieJsonStr = builder.toString();
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
-            // If the code didn't successfully get the weather data, there's no point in attemping
+            // If the code didn't successfully get the weather data, there's no point in attempting
             // to parse it.
             return null;
         } finally {
@@ -174,11 +177,6 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
 
         try {
             return getMovieDataFromJson(movieJsonStr);
-//                Movie[] movies = getMovieDataFromJson(movieJsonStr);
-//                for (Movie value : movies) {
-//                    Log.i(LOG_TAG, value.poster + "\n");
-//                }
-
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
@@ -192,10 +190,9 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
 
     @Override
     protected void onPostExecute(Movie[] movies) {
-        if(movies != null){
+        if (movies != null) {
             mMovieAdapter.clear();
-
-            for (Movie movie: movies) {
+            for (Movie movie : movies) {
                 mMovieAdapter.add(movie);
             }
         }
