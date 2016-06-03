@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- list of sort label entities -->
+    <array name="pref_sort_options">
+        <item>@string/pref_sort_label_popular</item>
+        <item>@string/pref_sort_label_rated</item>
+    </array>
+
+    <!-- list of sort value entities -->
+    <array name="pref_sort_values">
+        <item>@string/pref_sort_popular</item>
+        <item>@string/pref_sort_rated</item>
+    </array>
+
+</resources>
