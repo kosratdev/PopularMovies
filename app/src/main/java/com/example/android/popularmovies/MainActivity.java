@@ -1,12 +1,11 @@
 package com.example.android.popularmovies;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,8 +32,6 @@ public class MainActivity extends AppCompatActivity {
 
         switch (item.getItemId()){
             case R.id.action_setting:
-                // TODO: navigate to setting activity.
-                Toast.makeText(this,"Setting menu clicked",Toast.LENGTH_LONG).show();
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             default:

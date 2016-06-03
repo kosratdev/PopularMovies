@@ -1,7 +1,10 @@
 package com.example.android.popularmovies;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -30,8 +33,10 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
     private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
     private GridViewAdapter mMovieAdapter;
+    private Context mContext;
 
-    public FetchMoviesTask(GridViewAdapter movieAdapter) {
+    public FetchMoviesTask(Context context, GridViewAdapter movieAdapter) {
+        mContext = context;
         mMovieAdapter = movieAdapter;
     }
 
@@ -114,7 +119,9 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
         // Will contain the raw JSON response as a string.
         String movieJsonStr = null;
 
-        String sortType = "popular";
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String sortType = preferences.getString(mContext.getString(R.string.pref_sort_key),
+                mContext.getString(R.string.pref_sort_popular));
         try {
             // Construct the URL for the TheMovieDb query
             // Possible parameters are available at https://www.themoviedb.org/documentation/api

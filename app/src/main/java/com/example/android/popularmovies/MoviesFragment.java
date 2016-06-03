@@ -41,7 +41,6 @@ public class MoviesFragment extends Fragment {
                         Toast.LENGTH_SHORT).show();
             }
         });
-        updateMovies();
 
         return rootView;
     }
@@ -50,8 +49,13 @@ public class MoviesFragment extends Fragment {
      * update movie posters by getting data from themoviedb API
      */
     private void updateMovies() {
-        FetchMoviesTask moviesTask = new FetchMoviesTask(mMovieAdapter);
+        FetchMoviesTask moviesTask = new FetchMoviesTask(getActivity(), mMovieAdapter);
         moviesTask.execute();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateMovies();
+    }
 }
