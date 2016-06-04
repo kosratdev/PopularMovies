@@ -8,4 +8,39 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- Detail Activity Style -->
+    <!-- Movie Title Style-->
+    <style name="detail_title_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">100dp</item>
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+    <!-- Movie Poster style -->
+    <style name="detail_poster_styel">
+        <item name="android:layout_width">150dp</item>
+        <item name="android:layout_height">200dp</item>
+        <item name="android:layout_margin">20dp</item>
+        <item name="android:src">@drawable/test_poster</item>
+        <item name="android:layout_below">@id/title_textview</item>
+    </style>
+    <!-- Movie rated and release date style -->
+    <style name="detail_text_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">20dp</item>
+        <item name="android:layout_toRightOf">@id/poster_imageview</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+    <!-- Movie overview style -->
+    <style name="detail_overview_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_below">@id/poster_imageview</item>
+        <item name="android:layout_marginLeft">30dp</item>
+        <item name="android:layout_marginRight">30dp</item>
+        <item name="android:textSize">14sp</item>
+    </style>
 </resources>
