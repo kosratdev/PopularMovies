@@ -17,11 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
 
 /**
  * Created by kosrat on 6/3/16.
@@ -74,8 +70,8 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
             String title;
             String poster;
             String overview;
-            float rate;
-            Calendar release;
+            String rate;
+            String release;
 
             // Get the JSON object representing a movie
             JSONObject aMovie = movieArray.getJSONObject(i);
@@ -84,28 +80,14 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
             title = aMovie.getString(TMD_TITLE);
             poster = BASE_POSTER_PATH + aMovie.getString(TMD_POSTER);
             overview = aMovie.getString(TMD_OVERVIEW);
-            rate = Float.parseFloat(aMovie.getString(TMD_RATE));
-            release = getCalendar(aMovie.getString(TMD_RELEASE));
+            rate = aMovie.getString(TMD_RATE);
+            release = aMovie.getString(TMD_RELEASE);
 
             allMovies[i] = new Movie(title, poster, overview, rate, release);
         }
 
         return allMovies;
 
-    }
-
-    /**
-     * It is a converter to convert string to calendar
-     *
-     * @param date is a string date
-     * @return a calendar instance
-     * @throws ParseException
-     */
-    private Calendar getCalendar(String date) throws ParseException {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(dateFormat.parse(date));
-        return cal;
     }
 
     @Override

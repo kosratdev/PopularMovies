@@ -1,7 +1,5 @@
 package com.example.android.popularmovies;
 
-import java.util.Calendar;
-
 /**
  * Created by kosrat on 6/2/16.
  *
@@ -11,14 +9,14 @@ public class Movie {
     String mTitle;
     String mPoster;
     String mOverview;
-    float mRating;
-    Calendar mRealseDate;
+    String mRating;
+    String mReleaseDate;
 
-    public Movie(String title, String poster, String overview, float rating, Calendar realseDate) {
+    public Movie(String title, String poster, String overview, String rating, String releaseDate) {
         this.mTitle = title;
         this.mPoster = poster;
         this.mOverview = overview;
         this.mRating = rating;
-        this.mRealseDate = realseDate;
+        this.mReleaseDate = releaseDate;
     }
 }

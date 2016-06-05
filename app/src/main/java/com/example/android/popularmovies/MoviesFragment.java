@@ -9,10 +9,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Locale;
 
 /**
  * Created by kosrat on 5/30/16.
@@ -42,7 +39,7 @@ public class MoviesFragment extends Fragment {
                 Movie movie = mMovieAdapter.getItem(position);
                 Intent intent= new Intent(getActivity(), DetailActivity.class)
                         .putExtra("title", movie.mTitle)
-                        .putExtra("release", getDateStr(movie.mRealseDate))
+                        .putExtra("release", movie.mReleaseDate)
                         .putExtra("rated", movie.mRating + "/10")
                         .putExtra("overview", movie.mOverview)
                         .putExtra("poster", movie.mPoster);
@@ -51,16 +48,6 @@ public class MoviesFragment extends Fragment {
         });
 
         return rootView;
-    }
-
-    /**
-     * Convert Calendar to String Date
-     * @param calendar is an object of calendar
-     * @return a string date
-     */
-    private String getDateStr(Calendar calendar){
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-        return sdf.format(calendar.getTime());
     }
 
     /**
