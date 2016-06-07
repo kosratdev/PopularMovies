@@ -26,21 +26,16 @@ public class DetailFragment extends Fragment {
 
         Intent intent = getActivity().getIntent();
         if(intent != null) {
-            String title = intent.getStringExtra("title");
-            String release = intent.getStringExtra("release");
-            String rated = intent.getStringExtra("rated");
-            String overview = intent.getStringExtra("overview");
-            String poster = intent.getStringExtra("poster");
-
-            ((TextView) rootView.findViewById(R.id.title_textview)).setText(title);
-            ((TextView) rootView.findViewById(R.id.release_textview)).setText(release);
-            ((TextView) rootView.findViewById(R.id.rated_textview)).setText(rated);
-            ((TextView) rootView.findViewById(R.id.overview_textview)).setText(overview);
+            Movie movie = intent.getExtras().getParcelable("movieDetail");
+            ((TextView) rootView.findViewById(R.id.title_textview)).setText(movie.mTitle);
+            ((TextView) rootView.findViewById(R.id.release_textview)).setText(movie.mReleaseDate);
+            ((TextView) rootView.findViewById(R.id.rated_textview)).setText(movie.mRating);
+            ((TextView) rootView.findViewById(R.id.overview_textview)).setText(movie.mOverview);
             ImageView posterImageView = (ImageView) rootView.findViewById(R.id.poster_imageview);
 
             // Using Picasso Library for handle image loading and caching
             // for more info look at Picasso reference http://square.github.io/picasso/
-            Picasso.with(getContext()).load(poster).into(posterImageView);
+            Picasso.with(getContext()).load(movie.mPoster).into(posterImageView);
         }
 
         return rootView;

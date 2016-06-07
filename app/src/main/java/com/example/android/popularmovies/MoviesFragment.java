@@ -60,11 +60,7 @@ public class MoviesFragment extends Fragment {
 
                 Movie movie = mMovieAdapter.getItem(position);
                 Intent intent= new Intent(getActivity(), DetailActivity.class)
-                        .putExtra("title", movie.mTitle)
-                        .putExtra("release", movie.mReleaseDate)
-                        .putExtra("rated", movie.mRating + "/10")
-                        .putExtra("overview", movie.mOverview)
-                        .putExtra("poster", movie.mPoster);
+                        .putExtra("movieDetail", movie);
                 startActivity(intent);
             }
         });
