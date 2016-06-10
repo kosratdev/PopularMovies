@@ -51,7 +51,7 @@ import java.util.List;
 
 /**
  * Created by kosrat on 5/30/16.
- *
+ * <p/>
  * Encapsulates fetching the movies and displaying it as a {@link GridView} layout.
  */
 public class MoviesFragment extends Fragment {
@@ -61,6 +61,8 @@ public class MoviesFragment extends Fragment {
     private GridView mGridView;
 
     private final String MOVIE_DATA = "movie_data";
+
+    private String mMovieSort;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -88,6 +90,7 @@ public class MoviesFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+        mMovieSort = getMovieSort();
 
         mGridView = (GridView) rootView.findViewById(R.id.gridview);
         setGridView(mMovieList);
@@ -108,11 +111,17 @@ public class MoviesFragment extends Fragment {
 
     /**
      * Set gridview with movie's thumbnail
+     *
      * @param movieList is a movie list thumbnail
      */
     private void setGridView(ArrayList<Movie> movieList) {
         mMovieAdapter = new GridViewAdapter(getActivity(), movieList);
         mGridView.setAdapter(mMovieAdapter);
+    }
+
+    private String getMovieSort() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        return preferences.getString(getString(R.string.pref_sort_key), getString(R.string.pref_sort_popular));
     }
 
     /**
@@ -126,7 +135,12 @@ public class MoviesFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        //updateMovies();
+
+        String newSort = getMovieSort();
+        if(!mMovieSort.equals(newSort)) {
+            updateMovies();
+            mMovieSort = newSort;
+        }
     }
 
     /**
@@ -139,7 +153,7 @@ public class MoviesFragment extends Fragment {
          * The context is used to inflate the layout file, and the List is the data we want
          * to populate into the lists
          *
-         * @param context        The current context. Used to inflate the layout file.
+         * @param context   The current context. Used to inflate the layout file.
          * @param movieList A List of Movie objects to display in a list
          */
 
@@ -157,7 +171,7 @@ public class MoviesFragment extends Fragment {
          * @param position    The AdapterView position that is requesting a view
          * @param convertView The recycled view to populate.
          *                    (search online for "android view recycling" to learn more)
-         * @param parent The parent ViewGroup that is used for inflation.
+         * @param parent      The parent ViewGroup that is used for inflation.
          * @return The View for the position in the AdapterView.
          */
         @Override
