@@ -179,6 +179,7 @@ public class MoviesFragment extends Fragment {
             // Gets the Movie object from the ArrayAdapter at the appropriate position
             Movie movie = getItem(position);
 
+            ViewHolder holder;
             // Adapters recycle views to AdapterViews.
             // If this is a new View object we're getting, then inflate the layout.
             // If not, this view already has the layout inflated from a previous call to getView,
@@ -186,18 +187,35 @@ public class MoviesFragment extends Fragment {
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(
                         R.layout.movie_poster, parent, false);
+                holder = new ViewHolder();
+                holder.poster = (ImageView) convertView.findViewById(R.id.poster_imageview);
+                convertView.setTag(holder);
+            }else{
+                holder = (ViewHolder) convertView.getTag();
             }
 
-            ImageView poster = (ImageView) convertView.findViewById(R.id.poster_imageview);
             // Using Picasso Library for handle image loading and caching
             // for more info look at Picasso reference http://square.github.io/picasso/
-            Picasso.with(getContext()).load(movie.mPoster).into(poster);
+            if (!movie.mPoster.equals("")) {
+                Picasso.with(getContext())
+                        .load(movie.mPoster)
+                        .placeholder(R.drawable.test_poster) // before load an image
+                        .error(R.mipmap.ic_launcher) // at error of loading image
+                        .into(holder.poster);
+            }
 
 
             return convertView;
         }
-    }
 
+        /**
+         * ViewHolder used to not call findViewById() frequently during the scrolling of ListView
+         * (or GridView), which can slow down performance.
+         */
+        private class ViewHolder{
+            public ImageView poster;
+        }
+    }
     /**
      * Getting movie data from themoviedb API by creating a new thread to work in background.
      */
