@@ -24,7 +24,7 @@ public class MovieProvider extends ContentProvider {
      *
      * @return UriMatcher
      */
-    private static UriMatcher buildUriMatcher() {
+    static UriMatcher buildUriMatcher() {
 
         // All paths added to the UriMatcher have a corresponding code to return when a match is
         // found.  The code passed into the constructor represents the code to return for the root
