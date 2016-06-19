@@ -43,5 +43,8 @@ public class MovieContract {
 
         // column for storing the release date of movie
         public static final String COLUMN_MOVIE_RELEASE = "release_date";
+
+        // column for storing backdrop image of the movie
+        public static final String COLUMN_MOVIE_BACKDROP = "backdrop_path";
     }
 }
