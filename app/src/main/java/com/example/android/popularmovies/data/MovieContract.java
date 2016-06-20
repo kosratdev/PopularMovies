@@ -56,7 +56,7 @@ public class MovieContract {
         public static final String TABLE_NAME = "movies";
 
         // column for storing the id of movie
-        public static final String COLUMN_MOIVE_ID = "movie_id";
+        public static final String COLUMN_MOVIE_ID = "movie_id";
 
         // column for storing the title of movie
         public static final String COLUMN_MOVIE_TITLE = "title";
@@ -83,7 +83,7 @@ public class MovieContract {
         // Store all column of movies table we will use it for the Detail view.
         // Specify the columns we need.
         public static final String[] MOVIE_COLUMNS={
-                COLUMN_MOIVE_ID,
+                COLUMN_MOVIE_ID,
                 COLUMN_MOVIE_TITLE,
                 COLUMN_MOVIE_POSTER,
                 COLUMN_MOVIE_OVERVIEW,
