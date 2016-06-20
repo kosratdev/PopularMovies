@@ -28,6 +28,15 @@
             android:layout_below="@id/release_textview"
             android:text="@string/detail_rated" />
 
+        <Button
+            android:id="@+id/btn_favorite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Make as Favorite"
+            android:layout_below="@id/rated_textview"
+            android:layout_toRightOf="@id/poster_imageview"
+            android:layout_marginTop="20dp"/>
+
         <TextView
             android:id="@+id/overview_textview"
             style="@style/detail_overview_style"
