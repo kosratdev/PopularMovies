@@ -57,6 +57,7 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
         // These are the names of the JSON objects that need to be extracted.
         final String TMD_LIST = "results";
         final String TMD_ID = "id";
+        final String TMD_BACKDROP = "backdrop_path";
         final String TMD_TITLE = "original_title";
         final String TMD_POSTER = "poster_path";
         final String TMD_OVERVIEW = "overview";
@@ -70,6 +71,7 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
 
         for (int i = 0; i < movieArray.length(); i++) {
             int id;
+            String backdrop;
             String title;
             String poster;
             String overview;
@@ -81,13 +83,14 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
 
             // Get all properties of the movie.
             id = aMovie.getInt(TMD_ID);
+            backdrop = aMovie.getString(TMD_BACKDROP);
             title = aMovie.getString(TMD_TITLE);
             poster = BASE_POSTER_PATH + aMovie.getString(TMD_POSTER);
             overview = aMovie.getString(TMD_OVERVIEW);
             rate = aMovie.getString(TMD_RATE);
             release = aMovie.getString(TMD_RELEASE);
 
-            allMovies[i] = new Movie(id, title, poster, overview, rate, release);
+            allMovies[i] = new Movie(id, backdrop, title, poster, overview, rate, release);
         }
 
         return allMovies;

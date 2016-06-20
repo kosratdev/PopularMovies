@@ -31,9 +31,11 @@ public class Movie implements Parcelable{
     String mOverview;
     String mRating;
     String mReleaseDate;
+    String mBackdrop;
 
-    public Movie(int id, String title, String poster, String overview, String rating, String releaseDate) {
+    public Movie(int id, String backdrop, String title, String poster, String overview, String rating, String releaseDate) {
         this.mId = id;
+        this.mBackdrop = backdrop;
         this.mTitle = title;
         this.mPoster = poster;
         this.mOverview = overview;
@@ -59,6 +61,7 @@ public class Movie implements Parcelable{
     public void writeToParcel(Parcel parcel, int i) {
 
         parcel.writeInt(mId);
+        parcel.writeString(mBackdrop);
         parcel.writeString(mTitle);
         parcel.writeString(mPoster);
         parcel.writeString(mOverview);
@@ -78,6 +81,7 @@ public class Movie implements Parcelable{
         public Movie createFromParcel(Parcel parcel) {
             Movie mMovie = new Movie();
             mMovie.mId = parcel.readInt();
+            mMovie.mBackdrop = parcel.readString();
             mMovie.mTitle = parcel.readString();
             mMovie.mPoster = parcel.readString();
             mMovie.mOverview = parcel.readString();
