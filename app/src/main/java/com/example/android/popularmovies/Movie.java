@@ -24,13 +24,16 @@ import android.os.Parcelable;
  * Movie class to store all properties of a Movie
  */
 public class Movie implements Parcelable{
+
+    int mId;
     String mTitle;
     String mPoster;
     String mOverview;
     String mRating;
     String mReleaseDate;
 
-    public Movie(String title, String poster, String overview, String rating, String releaseDate) {
+    public Movie(int id, String title, String poster, String overview, String rating, String releaseDate) {
+        this.mId = id;
         this.mTitle = title;
         this.mPoster = poster;
         this.mOverview = overview;
@@ -55,6 +58,7 @@ public class Movie implements Parcelable{
     @Override
     public void writeToParcel(Parcel parcel, int i) {
 
+        parcel.writeInt(mId);
         parcel.writeString(mTitle);
         parcel.writeString(mPoster);
         parcel.writeString(mOverview);
@@ -73,6 +77,7 @@ public class Movie implements Parcelable{
         @Override
         public Movie createFromParcel(Parcel parcel) {
             Movie mMovie = new Movie();
+            mMovie.mId = parcel.readInt();
             mMovie.mTitle = parcel.readString();
             mMovie.mPoster = parcel.readString();
             mMovie.mOverview = parcel.readString();
