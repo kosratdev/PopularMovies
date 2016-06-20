@@ -9,8 +9,10 @@
     <string name="pref_sort_title">Sort</string>
     <string name="pref_sort_label_popular">Most Popular</string>
     <string name="pref_sort_label_rated">Top Rated</string>
+    <string name="pref_sort_label_favorites">Favorites</string>
     <string name="pref_sort_popular" translatable="false">popular</string>
     <string name="pref_sort_rated" translatable="false">top_rated</string>
+    <string name="pref_sort_favorites" translatable="false">favorites</string>
 
     <!-- Settings Activity title -->
     <string name="title_activity_settings">Settings</string>
