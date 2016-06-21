@@ -1,13 +1,13 @@
 /**
  * Copyright 2016 Kosrat D. Ahmed
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
- * <p/>
+ * <p>
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -18,10 +18,14 @@ package com.example.android.popularmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +34,7 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import com.example.android.popularmovies.data.MovieContract;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -40,7 +45,7 @@ import java.util.List;
  * <p/>
  * Encapsulates fetching the movies and displaying it as a {@link GridView} layout.
  */
-public class MoviesFragment extends Fragment {
+public class MoviesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private GridViewAdapter mMovieAdapter;
     ArrayList<Movie> mMovieList = new ArrayList<>();
@@ -50,6 +55,9 @@ public class MoviesFragment extends Fragment {
 
     private String mMovieSort;
 
+    private static final int CURSOR_LODER_ID = 0;
+    private MoviesAdapter mMoviesAdapter;
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -57,11 +65,13 @@ public class MoviesFragment extends Fragment {
         if (savedInstanceState != null) {
             // restore saved movie data
             mMovieList = savedInstanceState.getParcelableArrayList(MOVIE_DATA);
-            setGridView(mMovieList);
+//            setGridView(mMovieList);
         } else {
             // fetch data
             updateMovies();
         }
+
+        getLoaderManager().initLoader(CURSOR_LODER_ID, null, this);
     }
 
     @Override
@@ -76,10 +86,13 @@ public class MoviesFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+        mMoviesAdapter = new MoviesAdapter(getActivity(), null, 0, CURSOR_LODER_ID);
+
         mMovieSort = getMovieSort();
 
         mGridView = (GridView) rootView.findViewById(R.id.gridview);
         setGridView(mMovieList);
+//        mGridView.setAdapter(mMoviesAdapter);
 
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -123,10 +136,31 @@ public class MoviesFragment extends Fragment {
         super.onResume();
 
         String newSort = getMovieSort();
-        if(!mMovieSort.equals(newSort)) {
+        if (!mMovieSort.equals(newSort)) {
+            setGridView(mMovieList);
             updateMovies();
             mMovieSort = newSort;
         }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(getActivity(),
+                MovieContract.MovieEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mMoviesAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mMoviesAdapter.swapCursor(null);
     }
 
     /**
@@ -176,7 +210,7 @@ public class MoviesFragment extends Fragment {
                 holder = new ViewHolder();
                 holder.poster = (ImageView) convertView.findViewById(R.id.poster_imageview);
                 convertView.setTag(holder);
-            }else{
+            } else {
                 holder = (ViewHolder) convertView.getTag();
             }
 
@@ -198,7 +232,7 @@ public class MoviesFragment extends Fragment {
          * ViewHolder used to not call findViewById() frequently during the scrolling of ListView
          * (or GridView), which can slow down performance.
          */
-        private class ViewHolder{
+        private class ViewHolder {
             public ImageView poster;
         }
     }

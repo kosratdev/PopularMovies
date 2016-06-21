@@ -2,6 +2,7 @@ package com.example.android.popularmovies;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,8 +41,10 @@ public class MoviesAdapter extends CursorAdapter {
 
         ViewHolder holder = (ViewHolder) view.getTag();
 
-        String poster= cursor.getString(MovieContract.MovieEntry.COL_MOIVE_POSTER);
+        int posterIndex = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER);
+        String poster= cursor.getString(posterIndex);
 
+        Log.i("poster", "bindView: "+poster);
         // Using Picasso Library for handle image loading and caching
         // for more info look at Picasso reference http://square.github.io/picasso/
         if (!poster.equals("")) {
