@@ -37,7 +37,8 @@ import com.squareup.picasso.Picasso;
  */
 public class DetailFragment extends Fragment {
 
-    Movie movie = null;
+    private Movie mMovie;
+    public static final String MOVIE_ARGS = "mMovie args";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,17 +46,18 @@ public class DetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
         Intent intent = getActivity().getIntent();
+
         if (intent != null) {
-            movie = intent.getExtras().getParcelable("movieDetail");
-            ((TextView) rootView.findViewById(R.id.title_textview)).setText(movie.mTitle);
-            ((TextView) rootView.findViewById(R.id.release_textview)).setText(movie.mReleaseDate);
-            ((TextView) rootView.findViewById(R.id.rated_textview)).setText(movie.mRating);
-            ((TextView) rootView.findViewById(R.id.overview_textview)).setText(movie.mOverview);
+            mMovie = intent.getExtras().getParcelable(MOVIE_ARGS);
+            ((TextView) rootView.findViewById(R.id.title_textview)).setText(mMovie.mTitle);
+            ((TextView) rootView.findViewById(R.id.release_textview)).setText(mMovie.mReleaseDate);
+            ((TextView) rootView.findViewById(R.id.rated_textview)).setText(mMovie.mRating);
+            ((TextView) rootView.findViewById(R.id.overview_textview)).setText(mMovie.mOverview);
             ImageView posterImageView = (ImageView) rootView.findViewById(R.id.poster_imageview);
 
             // Using Picasso Library for handle image loading and caching
             // for more info look at Picasso reference http://square.github.io/picasso/
-            Picasso.with(getContext()).load(movie.mPoster).into(posterImageView);
+            Picasso.with(getContext()).load(mMovie.mPoster).into(posterImageView);
         }
 
         Button btnFavorite = (Button) rootView.findViewById(R.id.btn_favorite);
@@ -63,13 +65,13 @@ public class DetailFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 ContentValues values = new ContentValues();
-                values.put(MovieEntry.COLUMN_MOVIE_ID, movie.mId);
-                values.put(MovieEntry.COLUMN_MOVIE_BACKDROP, movie.mBackdrop);
-                values.put(MovieEntry.COLUMN_MOVIE_TITLE, movie.mTitle);
-                values.put(MovieEntry.COLUMN_MOVIE_POSTER, movie.mPoster);
-                values.put(MovieEntry.COLUMN_MOVIE_OVERVIEW, movie.mOverview);
-                values.put(MovieEntry.COLUMN_MOVIE_RATED, movie.mRating);
-                values.put(MovieEntry.COLUMN_MOVIE_RELEASE, movie.mReleaseDate);
+                values.put(MovieEntry.COLUMN_MOVIE_ID, mMovie.mId);
+                values.put(MovieEntry.COLUMN_MOVIE_BACKDROP, mMovie.mBackdrop);
+                values.put(MovieEntry.COLUMN_MOVIE_TITLE, mMovie.mTitle);
+                values.put(MovieEntry.COLUMN_MOVIE_POSTER, mMovie.mPoster);
+                values.put(MovieEntry.COLUMN_MOVIE_OVERVIEW, mMovie.mOverview);
+                values.put(MovieEntry.COLUMN_MOVIE_RATED, mMovie.mRating);
+                values.put(MovieEntry.COLUMN_MOVIE_RELEASE, mMovie.mReleaseDate);
 
                 getActivity().getContentResolver().insert(MovieEntry.CONTENT_URI, values);
 

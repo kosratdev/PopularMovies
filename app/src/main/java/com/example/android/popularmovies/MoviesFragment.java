@@ -15,6 +15,7 @@
  */
 package com.example.android.popularmovies;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -163,7 +165,10 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void open(Movie movie, int position) {
-
+        Log.i("Movie", "open: "+ movie.mTitle);
+        Intent intent = new Intent(getActivity(), DetailActivity.class);
+        intent.putExtra(DetailFragment.MOVIE_ARGS, movie);
+        startActivity(intent);
     }
 
 }
