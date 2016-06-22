@@ -7,8 +7,6 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.example.android.popularmovies.MoviesFragment.GridViewAdapter;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,6 +18,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.Arrays;
 
 /**
  * Created by kosrat on 6/10/16.
@@ -31,9 +30,9 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
     private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
     private Context mContext;
-    private GridViewAdapter mMovieAdapter;
+    private MovieGridAdapter mMovieAdapter;
 
-    public FetchMoviesTask(Context context, GridViewAdapter movieAdapter){
+    public FetchMoviesTask(Context context, MovieGridAdapter movieAdapter){
         mContext = context;
         mMovieAdapter = movieAdapter;
     }
@@ -187,10 +186,7 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
     @Override
     protected void onPostExecute(Movie[] movies) {
         if (movies != null) {
-            mMovieAdapter.clear();
-            for (Movie movie : movies) {
-                mMovieAdapter.add(movie);
-            }
+            mMovieAdapter.add(Arrays.asList(movies));
         }
     }
 }

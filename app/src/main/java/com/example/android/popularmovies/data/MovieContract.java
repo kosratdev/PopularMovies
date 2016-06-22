@@ -83,6 +83,7 @@ public class MovieContract {
         // Store all column of movies table we will use it for the Detail view.
         // Specify the columns we need.
         public static final String[] MOVIE_COLUMNS={
+                MovieEntry._ID,
                 COLUMN_MOVIE_ID,
                 COLUMN_MOVIE_TITLE,
                 COLUMN_MOVIE_POSTER,
@@ -94,13 +95,14 @@ public class MovieContract {
 
         // These indices are tied to MOVIE_COLUMNS.  If MOVIE_COLUMNS changes, these
         // must change.
-        public static final int COL_MOIVE_ID = 0;
-        public static final int COL_MOIVE_TITLE = 1;
-        public static final int COL_MOIVE_POSTER = 2;
-        public static final int COL_MOIVE_OVERVIEW = 3;
-        public static final int COL_MOIVE_RATED = 4;
-        public static final int COL_MOIVE_RELEASE = 5;
-        public static final int COL_MOIVE_BACKDROP = 6;
+        public static final int COL_MOVIE_TABLE_ID = 0;
+        public static final int COL_MOVIE_ID = 1;
+        public static final int COL_MOVIE_TITLE = 2;
+        public static final int COL_MOVIE_POSTER = 3;
+        public static final int COL_MOVIE_OVERVIEW = 4;
+        public static final int COL_MOVIE_RATED = 5;
+        public static final int COL_MOVIE_RELEASE = 6;
+        public static final int COL_MOVIE_BACKDROP = 7;
 
     }
 }
