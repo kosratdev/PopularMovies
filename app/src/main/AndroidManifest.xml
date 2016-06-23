@@ -26,6 +26,7 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
+            android:theme="@style/Theme.DesignDemo"
             android:name=".DetailActivity"
             android:label="@string/title_activity_detail"
             android:parentActivityName=".MainActivity">

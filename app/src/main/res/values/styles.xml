@@ -1,4 +1,12 @@
 <resources>
+    <style name="Theme.DesignDemo" parent="Base.Theme.DesignDemo">
+    </style>
+
+    <style name="Base.Theme.DesignDemo" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -22,17 +30,16 @@
     <style name="detail_poster_styel">
         <item name="android:layout_width">150dp</item>
         <item name="android:layout_height">200dp</item>
-        <item name="android:layout_margin">20dp</item>
         <item name="android:src">@drawable/test_poster</item>
-        <item name="android:layout_below">@id/title_textview</item>
     </style>
     <!-- Movie rated and release date style -->
     <style name="detail_text_style">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">20dp</item>
+        <item name="android:layout_marginTop">40dp</item>
+        <item name="android:layout_marginLeft">10dp</item>
         <item name="android:layout_toRightOf">@id/poster_imageview</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:textAppearance">@android:style/TextAppearance.Medium</item>
     </style>
     <!-- Movie overview style -->
     <style name="detail_overview_style">
@@ -42,5 +49,13 @@
         <item name="android:layout_marginLeft">30dp</item>
         <item name="android:layout_marginRight">30dp</item>
         <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Widget.CardContent" parent="android:Widget">
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingTop">24dp</item>
+        <item name="android:paddingBottom">24dp</item>
+        <item name="android:orientation">vertical</item>
     </style>
 </resources>

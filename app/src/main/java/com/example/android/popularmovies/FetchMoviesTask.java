@@ -82,7 +82,7 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
 
             // Get all properties of the movie.
             id = aMovie.getInt(TMD_ID);
-            backdrop = aMovie.getString(TMD_BACKDROP);
+            backdrop = BASE_POSTER_PATH + aMovie.getString(TMD_BACKDROP);
             title = aMovie.getString(TMD_TITLE);
             poster = BASE_POSTER_PATH + aMovie.getString(TMD_POSTER);
             overview = aMovie.getString(TMD_OVERVIEW);
