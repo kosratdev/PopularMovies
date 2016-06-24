@@ -16,10 +16,14 @@
 package com.example.android.popularmovies;
 
 import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,20 +33,39 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by kosrat on 6/4/16.
  * <p/>
  * Display all properties of the Movie.
  */
-public class DetailFragment extends Fragment {
+public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks,
+        FetchTrailersTask.Listener{
 
     private Movie mMovie;
-    public static final String MOVIE_ARGS = "mMovie args";
+    public static final String MOVIE_ARGS = "MOVIE_ARGS";
+    public static final String EXTRA_TRAILERS = "EXTRA_TRAILERS";
+
+    private TrailerAdapter mTrailerAdapter;
+
+    RecyclerView mRecyclerTrailers;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+
+        mRecyclerTrailers = (RecyclerView) rootView.findViewById(R.id.trailer_list);
+
+        // For horizontal list of trailers
+        LinearLayoutManager layoutManager
+                = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        mRecyclerTrailers.setLayoutManager(layoutManager);
+        mTrailerAdapter = new TrailerAdapter(new ArrayList<Trailer>(), this);
+        mRecyclerTrailers.setAdapter(mTrailerAdapter);
+        mRecyclerTrailers.setNestedScrollingEnabled(false);
 
         Intent intent = getActivity().getIntent();
         final Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
@@ -67,6 +90,15 @@ public class DetailFragment extends Fragment {
             Picasso.with(getContext()).load(mMovie.mBackdrop).into(backdrop);
         }
 
+        // Fetch trailers only if savedInstanceState == null
+        if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_TRAILERS)) {
+            List<Trailer> trailers = savedInstanceState.getParcelableArrayList(EXTRA_TRAILERS);
+            mTrailerAdapter.add(trailers);
+//            mButtonWatchTrailer.setEnabled(true);
+        } else {
+            fetchTrailers();
+        }
+
 //        Button btnFavorite = (Button) rootView.findViewById(R.id.btn_favorite);
 //        btnFavorite.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -87,5 +119,41 @@ public class DetailFragment extends Fragment {
 //        });
 
         return rootView;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        ArrayList<Trailer> trailers = mTrailerAdapter.getTrailers();
+        if (trailers != null && !trailers.isEmpty()) {
+            outState.putParcelableArrayList(EXTRA_TRAILERS, trailers);
+        }
+
+//        ArrayList<Review> reviews = mReviewListAdapter.getReviews();
+//        if (reviews != null && !reviews.isEmpty()) {
+//            outState.putParcelableArrayList(EXTRA_REVIEWS, reviews);
+//        }
+    }
+
+    @Override
+    public void watch(Trailer trailer, int position) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(trailer.getTrailerUrl())));
+    }
+
+    private void fetchTrailers() {
+        FetchTrailersTask task = new FetchTrailersTask(this);
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mMovie.mId);
+    }
+
+    @Override
+    public void onFetchFinished(List<Trailer> trailers) {
+
+        mTrailerAdapter.add(trailers);
+//        mButtonWatchTrailer.setEnabled(!trailers.isEmpty());
+
+//        if (mTrailerAdapter.getItemCount() > 0) {
+//            Trailer trailer = mTrailerAdapter.getTrailers().get(0);
+//            updateShareActionProvider(trailer);
+//        }
     }
 }

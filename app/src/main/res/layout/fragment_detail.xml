@@ -140,12 +140,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                        tools:text="Trailers" />
+                        android:text="Trailers" />
 
-                    <TextView
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/trailer_list"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        tools:text="ipsum ipsum ipsum" />
+                        android:layout_marginTop="16dp"
+                        tools:listitem="@layout/trailer_list_item" />
 
                 </LinearLayout>
 
