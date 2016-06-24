@@ -29,6 +29,9 @@ public class Trailer implements Parcelable {
         return mKey;
     }
 
+    public String getName(){
+        return mName;
+    }
     @Override
     public int describeContents() {
         return 0;

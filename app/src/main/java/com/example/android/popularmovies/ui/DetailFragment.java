@@ -19,13 +19,19 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -57,11 +63,19 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
     public static final String EXTRA_TRAILERS = "EXTRA_TRAILERS";
     public static final String EXTRA_REVIEWS = "EXTRA_REVIEWS";
 
+    private ShareActionProvider mShare;
+
     private TrailerAdapter mTrailerAdapter;
     private ReviewAdapter mReviewAdapter;
 
     RecyclerView mRecyclerTrailers;
     RecyclerView mRecyclerReviews;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -151,6 +165,14 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.detial_menu,menu);
+        MenuItem shareTrailerMenuItem = menu.findItem(R.id.share_trailer);
+        mShare = (ShareActionProvider) MenuItemCompat.getActionProvider(shareTrailerMenuItem);
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         ArrayList<Trailer> trailers = mTrailerAdapter.getTrailers();
@@ -185,10 +207,19 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
         mTrailerAdapter.add(trailers);
 //        mButtonWatchTrailer.setEnabled(!trailers.isEmpty());
 
-//        if (mTrailerAdapter.getItemCount() > 0) {
-//            Trailer trailer = mTrailerAdapter.getTrailers().get(0);
-//            updateShareActionProvider(trailer);
-//        }
+        if (mTrailerAdapter.getItemCount() > 0) {
+            Trailer trailer = mTrailerAdapter.getTrailers().get(0);
+            updateShareActionProvider(trailer);
+        }
+    }
+
+    private void updateShareActionProvider(Trailer trailer) {
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mMovie.mTitle);
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, trailer.getName() + ": "
+                + trailer.getTrailerUrl());
+        mShare.setShareIntent(sharingIntent);
     }
 
     @Override

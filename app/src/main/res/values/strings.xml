@@ -23,4 +23,5 @@
     <string name="detail_rated">Rated: </string>
     <string name="detail_release">Release Date: </string>
     <string name="detail_overview">Overview</string>
+    <string name="share_trailer">Share Trailer</string>
 </resources>
