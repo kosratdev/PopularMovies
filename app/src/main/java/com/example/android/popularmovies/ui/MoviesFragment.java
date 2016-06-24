@@ -27,14 +27,15 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 
-import com.example.android.popularmovies.adapter.MovieGridAdapter;
 import com.example.android.popularmovies.R;
+import com.example.android.popularmovies.adapter.MovieGridAdapter;
 import com.example.android.popularmovies.data.MovieContract;
 import com.example.android.popularmovies.model.Movie;
 import com.example.android.popularmovies.network.FetchMoviesTask;
@@ -90,12 +91,35 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         mMovieSort = getMovieSort();
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.movie_recycler);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), getNumOfColumns()));
         // To avoid "E/RecyclerView: No adapter attached; skipping layout"
         mAdapter = new MovieGridAdapter(new ArrayList<Movie>(), this);
         mRecyclerView.setAdapter(mAdapter);
 
         return rootView;
+    }
+
+    public int getNumOfColumns() {
+
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+
+        int numOfColoums = 0;
+        if (dpWidth < dpHeight) {
+            // portrait mode
+            numOfColoums = 2;
+            if (dpWidth > 600) { // for tablet sw600
+                numOfColoums = 3;
+            }
+        } else {
+            // landscape mode
+            numOfColoums = 3;
+            if (dpWidth > 600) { // for tablet sw600
+                numOfColoums = 3;
+            }
+        }
+        return numOfColoums;
     }
 
     @Override
