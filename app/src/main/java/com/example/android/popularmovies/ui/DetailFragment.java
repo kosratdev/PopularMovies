@@ -1,13 +1,13 @@
 /**
  * Copyright 2016 Kosrat D. Ahmed
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
- * <p>
+ * <p/>
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -15,12 +15,15 @@
  */
 package com.example.android.popularmovies.ui;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -36,10 +39,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.adapter.ReviewAdapter;
 import com.example.android.popularmovies.adapter.TrailerAdapter;
+import com.example.android.popularmovies.data.MovieContract;
 import com.example.android.popularmovies.model.Movie;
 import com.example.android.popularmovies.model.Review;
 import com.example.android.popularmovies.model.Trailer;
@@ -71,6 +76,8 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
     RecyclerView mRecyclerTrailers;
     RecyclerView mRecyclerReviews;
 
+    private FloatingActionButton mFloat;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +88,8 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+
+        mFloat = (FloatingActionButton) rootView.findViewById(R.id.float_button);
 
         mRecyclerTrailers = (RecyclerView) rootView.findViewById(R.id.trailer_list);
         mRecyclerReviews = (RecyclerView) rootView.findViewById(R.id.review_recycler);
@@ -103,8 +112,8 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
 
         Intent intent = getActivity().getIntent();
         final Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         CollapsingToolbarLayout collapsingToolbar =
                 (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
@@ -141,25 +150,18 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
             fetchReviews();
         }
 
+        mFloat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isFavorite()) {
+                    removeFavorite();
+                } else {
+                    makeFavorite();
+                }
+            }
+        });
 
-//        Button btnFavorite = (Button) rootView.findViewById(R.id.btn_favorite);
-//        btnFavorite.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                ContentValues values = new ContentValues();
-//                values.put(MovieEntry.COLUMN_MOVIE_ID, mMovie.mId);
-//                values.put(MovieEntry.COLUMN_MOVIE_BACKDROP, mMovie.mBackdrop);
-//                values.put(MovieEntry.COLUMN_MOVIE_TITLE, mMovie.mTitle);
-//                values.put(MovieEntry.COLUMN_MOVIE_POSTER, mMovie.mPoster);
-//                values.put(MovieEntry.COLUMN_MOVIE_OVERVIEW, mMovie.mOverview);
-//                values.put(MovieEntry.COLUMN_MOVIE_RATED, mMovie.mRating);
-//                values.put(MovieEntry.COLUMN_MOVIE_RELEASE, mMovie.mReleaseDate);
-//
-//                getActivity().getContentResolver().insert(MovieEntry.CONTENT_URI, values);
-//
-//                Toast.makeText(getActivity(), "Data inserted to db", Toast.LENGTH_SHORT).show();
-//            }
-//        });
+        updateFavoriteButton();
 
         return rootView;
     }
@@ -167,7 +169,7 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.detial_menu,menu);
+        inflater.inflate(R.menu.detial_menu, menu);
         MenuItem shareTrailerMenuItem = menu.findItem(R.id.share_trailer);
         mShare = (ShareActionProvider) MenuItemCompat.getActionProvider(shareTrailerMenuItem);
     }
@@ -196,7 +198,7 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mMovie.mId);
     }
 
-    private void fetchReviews(){
+    private void fetchReviews() {
         FetchReviewTask task = new FetchReviewTask(this);
         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mMovie.mId);
     }
@@ -231,4 +233,93 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
     public void read(Review review, int position) {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(review.getUrl())));
     }
+
+    private void updateFavoriteButton() {
+
+        if (isFavorite()) {
+            mFloat.setImageResource(R.drawable.ic_favorite);
+        } else {
+            mFloat.setImageResource(R.drawable.ic_favorite_border);
+        }
+    }
+
+    private boolean isFavorite() {
+
+        Cursor movieCursor = getContext().getContentResolver().query(
+                MovieContract.MovieEntry.CONTENT_URI,
+                new String[]{MovieContract.MovieEntry.COLUMN_MOVIE_ID},
+                MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = " + mMovie.mId,
+                null,
+                null);
+
+        if (movieCursor != null && movieCursor.moveToFirst()) {
+            movieCursor.close();
+            return true;
+        } else {
+            return false;
+        }
+
+
+    }
+
+    private void makeFavorite() {
+
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                if (!isFavorite()) {
+                    ContentValues movieValues = new ContentValues();
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,
+                            mMovie.mId);
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE,
+                            mMovie.mTitle);
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER,
+                            mMovie.mPoster);
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW,
+                            mMovie.mOverview);
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RATED,
+                            mMovie.mRating);
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE,
+                            mMovie.mReleaseDate);
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_BACKDROP,
+                            mMovie.mBackdrop);
+                    getContext().getContentResolver().insert(
+                            MovieContract.MovieEntry.CONTENT_URI,
+                            movieValues
+                    );
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                Toast.makeText(getActivity(), mMovie.mTitle +" Added Into Favorite", Toast.LENGTH_LONG).show();
+                updateFavoriteButton();
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private void removeFavorite() {
+
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                if (isFavorite()) {
+                    getContext().getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI,
+                            MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = " + mMovie.mId, null);
+
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                Toast.makeText(getActivity(), mMovie.mTitle +" Removed From Favorite", Toast.LENGTH_LONG).show();
+                updateFavoriteButton();
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
 }
