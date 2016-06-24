@@ -1,5 +1,6 @@
 package com.example.android.popularmovies.network;
 
+import com.example.android.popularmovies.model.Reviews;
 import com.example.android.popularmovies.model.Trailers;
 
 import retrofit2.Call;
@@ -18,7 +19,6 @@ public interface MovieTaskService {
     @GET("3/movie/{id}/videos")
     Call<Trailers> findTrailersById(@Path("id") long movieId, @Query("api_key") String apiKey);
 
-//    @GET("3/movie/{id}/reviews")
-//    Call<Reviews> findReviewsById(@Path("id") long movieId, @Query("api_key") String apiKey);
-
+    @GET("3/movie/{id}/reviews")
+    Call<Reviews> findReviewsById(@Path("id") long movieId, @Query("api_key") String apiKey);
 }

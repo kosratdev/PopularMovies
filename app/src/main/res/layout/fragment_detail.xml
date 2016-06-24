@@ -169,12 +169,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                        tools:text="Reviews" />
+                        android:text="Reviews" />
 
-                    <TextView
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/review_recycler"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        tools:text="ipsum ipsum ipsum" />
+                        android:layout_marginTop="16dp"
+                        tools:listitem="@layout/review_list_item"/>
 
                 </LinearLayout>
 

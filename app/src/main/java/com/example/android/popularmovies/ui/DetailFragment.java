@@ -31,11 +31,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.android.popularmovies.network.FetchTrailersTask;
-import com.example.android.popularmovies.model.Movie;
 import com.example.android.popularmovies.R;
-import com.example.android.popularmovies.model.Trailer;
+import com.example.android.popularmovies.adapter.ReviewAdapter;
 import com.example.android.popularmovies.adapter.TrailerAdapter;
+import com.example.android.popularmovies.model.Movie;
+import com.example.android.popularmovies.model.Review;
+import com.example.android.popularmovies.model.Trailer;
+import com.example.android.popularmovies.network.FetchReviewTask;
+import com.example.android.popularmovies.network.FetchTrailersTask;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -47,15 +50,18 @@ import java.util.List;
  * Display all properties of the Movie.
  */
 public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks,
-        FetchTrailersTask.Listener {
+        FetchTrailersTask.Listener, FetchReviewTask.Listener, ReviewAdapter.Callback {
 
     private Movie mMovie;
     public static final String MOVIE_ARGS = "MOVIE_ARGS";
     public static final String EXTRA_TRAILERS = "EXTRA_TRAILERS";
+    public static final String EXTRA_REVIEWS = "EXTRA_REVIEWS";
 
     private TrailerAdapter mTrailerAdapter;
+    private ReviewAdapter mReviewAdapter;
 
     RecyclerView mRecyclerTrailers;
+    RecyclerView mRecyclerReviews;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,6 +69,7 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
         mRecyclerTrailers = (RecyclerView) rootView.findViewById(R.id.trailer_list);
+        mRecyclerReviews = (RecyclerView) rootView.findViewById(R.id.review_recycler);
 
         // For horizontal list of trailers
         LinearLayoutManager layoutManager
@@ -71,6 +78,14 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
         mTrailerAdapter = new TrailerAdapter(new ArrayList<Trailer>(), this);
         mRecyclerTrailers.setAdapter(mTrailerAdapter);
         mRecyclerTrailers.setNestedScrollingEnabled(false);
+
+        // For vertical list of reviews
+        LinearLayoutManager reviewLayoutManager
+                = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        mRecyclerReviews.setLayoutManager(reviewLayoutManager);
+        mReviewAdapter = new ReviewAdapter(new ArrayList<Review>(), this);
+        mRecyclerReviews.setAdapter(mReviewAdapter);
+
 
         Intent intent = getActivity().getIntent();
         final Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
@@ -104,6 +119,15 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
             fetchTrailers();
         }
 
+        // Fetch reviews only if savedInstanceState == null
+        if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_REVIEWS)) {
+            List<Review> reviews = savedInstanceState.getParcelableArrayList(EXTRA_REVIEWS);
+            mReviewAdapter.add(reviews);
+        } else {
+            fetchReviews();
+        }
+
+
 //        Button btnFavorite = (Button) rootView.findViewById(R.id.btn_favorite);
 //        btnFavorite.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -134,10 +158,10 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
             outState.putParcelableArrayList(EXTRA_TRAILERS, trailers);
         }
 
-//        ArrayList<Review> reviews = mReviewListAdapter.getReviews();
-//        if (reviews != null && !reviews.isEmpty()) {
-//            outState.putParcelableArrayList(EXTRA_REVIEWS, reviews);
-//        }
+        ArrayList<Review> reviews = mReviewAdapter.getReviews();
+        if (reviews != null && !reviews.isEmpty()) {
+            outState.putParcelableArrayList(EXTRA_REVIEWS, reviews);
+        }
     }
 
     @Override
@@ -147,6 +171,11 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
 
     private void fetchTrailers() {
         FetchTrailersTask task = new FetchTrailersTask(this);
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mMovie.mId);
+    }
+
+    private void fetchReviews(){
+        FetchReviewTask task = new FetchReviewTask(this);
         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mMovie.mId);
     }
 
@@ -160,5 +189,15 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
 //            Trailer trailer = mTrailerAdapter.getTrailers().get(0);
 //            updateShareActionProvider(trailer);
 //        }
+    }
+
+    @Override
+    public void onReviewFetchFinished(List<Review> reviews) {
+        mReviewAdapter.add(reviews);
+    }
+
+    @Override
+    public void read(Review review, int position) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(review.getUrl())));
     }
 }
