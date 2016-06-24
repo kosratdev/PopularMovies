@@ -13,7 +13,7 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -25,13 +25,13 @@ import android.os.Parcelable;
  */
 public class Movie implements Parcelable{
 
-    long mId;
-    String mTitle;
-    String mPoster;
-    String mOverview;
-    String mRating;
-    String mReleaseDate;
-    String mBackdrop;
+    public long mId;
+    public String mTitle;
+    public String mPoster;
+    public String mOverview;
+    public String mRating;
+    public String mReleaseDate;
+    public String mBackdrop;
 
     public Movie(long id, String backdrop, String title, String poster, String overview, String rating, String releaseDate) {
         this.mId = id;

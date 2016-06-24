@@ -1,4 +1,6 @@
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.network;
+
+import com.example.android.popularmovies.model.Trailers;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

@@ -1,7 +1,11 @@
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.network;
 
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.example.android.popularmovies.BuildConfig;
+import com.example.android.popularmovies.model.Trailer;
+import com.example.android.popularmovies.model.Trailers;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,7 +28,7 @@ public class FetchTrailersTask extends AsyncTask<Long, Void, List<Trailer>> {
     /**
      * Interface definition for a callback to be invoked when trailers are loaded.
      */
-    interface Listener {
+    public interface Listener {
         void onFetchFinished(List<Trailer> trailers);
     }
 

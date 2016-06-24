@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.ui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -33,7 +33,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 
+import com.example.android.popularmovies.adapter.MovieGridAdapter;
+import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.data.MovieContract;
+import com.example.android.popularmovies.model.Movie;
+import com.example.android.popularmovies.network.FetchMoviesTask;
 
 import java.util.ArrayList;
 import java.util.List;
