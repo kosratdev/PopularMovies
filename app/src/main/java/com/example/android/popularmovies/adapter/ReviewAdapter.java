@@ -12,6 +12,9 @@ import com.example.android.popularmovies.model.Review;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by kosrat on 6/24/16.
  */
@@ -62,15 +65,16 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
     public class ViewHolder extends RecyclerView.ViewHolder{
 
         private final View mView;
-        private TextView mAuthor;
-        private TextView mContent;
+        @BindView(R.id.review_author)
+        TextView mAuthor;
+        @BindView(R.id.review_content)
+        TextView mContent;
         public Review mReview;
 
         public ViewHolder(View itemView) {
             super(itemView);
+            ButterKnife.bind(this, itemView);
             mView = itemView;
-            mAuthor = (TextView) itemView.findViewById(R.id.review_author);
-            mContent = (TextView) itemView.findViewById(R.id.review_content);
         }
     }
 

@@ -16,10 +16,13 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by kosrat on 6/23/16.
  */
-public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHolder>{
+public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHolder> {
     @SuppressWarnings("unused")
     private final static String LOG_TAG = TrailerAdapter.class.getSimpleName();
 
@@ -84,13 +87,14 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
+        @BindView(R.id.trailer_thumbnail)
         ImageView mThumbnailView;
         public Trailer mTrailer;
 
         public ViewHolder(View view) {
             super(view);
+            ButterKnife.bind(this, view);
             mView = view;
-            mThumbnailView = (ImageView) view.findViewById(R.id.trailer_thumbnail);
         }
     }
 

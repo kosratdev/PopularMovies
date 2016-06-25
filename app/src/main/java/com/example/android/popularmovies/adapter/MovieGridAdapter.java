@@ -17,6 +17,9 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by kosrat on 6/22/16.
  */
@@ -76,13 +79,14 @@ public class MovieGridAdapter
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
 
+        @BindView(R.id.iv_thumbnail)
         ImageView mThumbnailView;
+        @BindView(R.id.tv_title)
         TextView mTitleView;
 
         public ViewHolder(View view) {
             super(view);
-            mThumbnailView = (ImageView) view.findViewById(R.id.iv_thumbnail);
-            mTitleView = (TextView) view.findViewById(R.id.tv_title);
+            ButterKnife.bind(this, view);
             mView = view;
         }
 

@@ -49,6 +49,10 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 /**
  * Created by kosrat on 6/4/16.
  * <p/>
@@ -67,11 +71,29 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
     private TrailerAdapter mTrailerAdapter;
     private ReviewAdapter mReviewAdapter;
 
+    @BindView(R.id.trailer_list)
     RecyclerView mRecyclerTrailers;
+    @BindView(R.id.review_recycler)
     RecyclerView mRecyclerReviews;
 
-    private FloatingActionButton mFloat;
-    private FloatingActionButton mFloatShare;
+    @BindView(R.id.float_button)
+    FloatingActionButton mFloat;
+    @BindView(R.id.fab_share)
+    FloatingActionButton mFloatShare;
+
+    @BindView(R.id.collapsing_toolbar)
+    CollapsingToolbarLayout mCollapsingToolbar;
+
+    @BindView(R.id.release_textview)
+    TextView mMovieRelease;
+    @BindView(R.id.rated_textview)
+    TextView mMovieRated;
+    @BindView(R.id.overview_textview)
+    TextView mMovieOverview;
+    @BindView(R.id.poster_imageview)
+    ImageView mMoviePoster;
+    @BindView(R.id.backdrop)
+    ImageView mMovieBackdrop;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,12 +107,7 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-
-        mFloat = (FloatingActionButton) rootView.findViewById(R.id.float_button);
-        mFloatShare = (FloatingActionButton) rootView.findViewById(R.id.fab_share);
-
-        mRecyclerTrailers = (RecyclerView) rootView.findViewById(R.id.trailer_list);
-        mRecyclerReviews = (RecyclerView) rootView.findViewById(R.id.review_recycler);
+        ButterKnife.bind(this, rootView);
 
         // For horizontal list of trailers
         LinearLayoutManager layoutManager
@@ -107,15 +124,11 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
         mReviewAdapter = new ReviewAdapter(new ArrayList<Review>(), this);
         mRecyclerReviews.setAdapter(mReviewAdapter);
 
-        CollapsingToolbarLayout collapsingToolbar =
-                (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
+        mCollapsingToolbar.setTitle(mMovie.mTitle);
 
-        collapsingToolbar.setTitle(mMovie.mTitle);
-        ((TextView) rootView.findViewById(R.id.release_textview)).setText(mMovie.mReleaseDate);
-        ((TextView) rootView.findViewById(R.id.rated_textview)).setText(mMovie.mRating);
-        ((TextView) rootView.findViewById(R.id.overview_textview)).setText(mMovie.mOverview);
-        ImageView posterImageView = (ImageView) rootView.findViewById(R.id.poster_imageview);
-        ImageView backdrop = (ImageView) rootView.findViewById(R.id.backdrop);
+        mMovieRelease.setText(mMovie.mReleaseDate);
+        mMovieRated.setText(mMovie.mRating);
+        mMovieOverview.setText(mMovie.mOverview);
 
         // Using Picasso Library for handle image loading and caching
         // for more info look at Picasso reference http://square.github.io/picasso/
@@ -123,13 +136,13 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
                 .load(mMovie.mPoster)
                 .placeholder(R.drawable.temp_poster) // before load an image
                 .error(R.drawable.temp_poster)
-                .into(posterImageView);
+                .into(mMoviePoster);
 
         Picasso.with(getContext())
                 .load(mMovie.mBackdrop)
                 .placeholder(R.drawable.temp_poster) // before load an image
                 .error(R.drawable.temp_poster)
-                .into(backdrop);
+                .into(mMovieBackdrop);
 
         // Fetch trailers only if savedInstanceState == null
         if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_TRAILERS)) {
@@ -148,30 +161,22 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
             fetchReviews();
         }
 
-        mFloat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isFavorite()) {
-                    removeFavorite();
-                } else {
-                    makeFavorite();
-                }
-            }
-        });
-
         updateFavoriteButton();
-
-        mFloatShare.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ShareVideo();
-            }
-        });
 
         return rootView;
     }
 
-    private void ShareVideo(){
+    @OnClick(R.id.float_button)
+    public void makeAsFavorite(){
+        if (isFavorite()) {
+            removeFavorite();
+        } else {
+            makeFavorite();
+        }
+    }
+
+    @OnClick(R.id.fab_share)
+    public void ShareVideo(){
 
         if(sharingIntent != null) {
             Intent intent = Intent.createChooser(sharingIntent, "Share trailer via");

@@ -41,6 +41,9 @@ import com.example.android.popularmovies.network.FetchMoviesTask;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by kosrat on 5/30/16.
  * <p/>
@@ -71,9 +74,9 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
-    private boolean mTwoPane;
     private MovieGridAdapter mAdapter;
 
+    @BindView(R.id.movie_recycler)
     RecyclerView mRecyclerView;
 
 
@@ -97,10 +100,10 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        ButterKnife.bind(this, rootView);
 
         mMovieSort = getMovieSort();
 
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.movie_recycler);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), getNumOfColumns()));
         // To avoid "E/RecyclerView: No adapter attached; skipping layout"
         mAdapter = new MovieGridAdapter(new ArrayList<Movie>(), this);
