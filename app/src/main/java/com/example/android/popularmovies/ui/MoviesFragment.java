@@ -24,6 +24,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -57,6 +59,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     private String mMovieSort;
 
     private static final int CURSOR_LODER_ID = 0;
+    private ActionBar mActionBar;
 
     /**
      * A callback interface that all activities containing this fragment must
@@ -109,9 +112,22 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         mAdapter = new MovieGridAdapter(new ArrayList<Movie>(), this);
         mRecyclerView.setAdapter(mAdapter);
 
+        mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        mActionBar.setTitle(getMovieTitle());
+
         return rootView;
     }
 
+    private String getMovieTitle(){
+        switch (getMovieSort()){
+            case "popular":
+                return "Most Popular";
+            case "top_rated":
+                return "Top Rated";
+            default:
+                return "Favorites";
+        }
+    }
     public int getNumOfColumns() {
 
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
@@ -177,6 +193,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         String newSort = getMovieSort();
         if (!mMovieSort.equals(newSort)) {
             fetchMovies(newSort);
+            mActionBar.setTitle(getMovieTitle());
             mMovieSort = newSort;
         }
     }
