@@ -1,3 +1,19 @@
+/*
+ * Copyright 2016 Kosrat D. Ahmed
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
 package com.example.android.popularmovies.network;
 
 import android.content.Context;
@@ -27,7 +43,7 @@ import java.util.Arrays;
 
 /**
  * Created by kosrat on 6/10/16.
- /**
+ * /**
  * Getting movie data from themoviedb API by creating a new thread to work in background.
  */
 public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
@@ -37,10 +53,11 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
     private Context mContext;
     private MovieGridAdapter mMovieAdapter;
 
-    public FetchMoviesTask(Context context, MovieGridAdapter movieAdapter){
+    public FetchMoviesTask(Context context, MovieGridAdapter movieAdapter) {
         mContext = context;
         mMovieAdapter = movieAdapter;
     }
+
     /**
      * Take the String representing the complete movie in JSON Format and
      * pull out the data we need to construct the Strings needed for the wireframes.
