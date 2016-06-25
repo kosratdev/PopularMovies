@@ -26,11 +26,9 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ShareActionProvider;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -81,6 +79,9 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments().containsKey(MOVIE_ARGS)) {
+            mMovie = getArguments().getParcelable(MOVIE_ARGS);
+        }
         setHasOptionsMenu(true);
     }
 
@@ -110,28 +111,24 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
         mRecyclerReviews.setAdapter(mReviewAdapter);
 
 
-        Intent intent = getActivity().getIntent();
-        final Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        final Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
+//        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+//        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         CollapsingToolbarLayout collapsingToolbar =
                 (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
 
-        if (intent != null) {
-            mMovie = intent.getExtras().getParcelable(MOVIE_ARGS);
-            collapsingToolbar.setTitle(mMovie.mTitle);
-            ((TextView) rootView.findViewById(R.id.release_textview)).setText(mMovie.mReleaseDate);
-            ((TextView) rootView.findViewById(R.id.rated_textview)).setText(mMovie.mRating);
-            ((TextView) rootView.findViewById(R.id.overview_textview)).setText(mMovie.mOverview);
-            ImageView posterImageView = (ImageView) rootView.findViewById(R.id.poster_imageview);
-            ImageView backdrop = (ImageView) rootView.findViewById(R.id.backdrop);
+        collapsingToolbar.setTitle(mMovie.mTitle);
+        ((TextView) rootView.findViewById(R.id.release_textview)).setText(mMovie.mReleaseDate);
+        ((TextView) rootView.findViewById(R.id.rated_textview)).setText(mMovie.mRating);
+        ((TextView) rootView.findViewById(R.id.overview_textview)).setText(mMovie.mOverview);
+        ImageView posterImageView = (ImageView) rootView.findViewById(R.id.poster_imageview);
+        ImageView backdrop = (ImageView) rootView.findViewById(R.id.backdrop);
 
-            // Using Picasso Library for handle image loading and caching
-            // for more info look at Picasso reference http://square.github.io/picasso/
-            Picasso.with(getContext()).load(mMovie.mPoster).into(posterImageView);
-            Picasso.with(getContext()).load(mMovie.mBackdrop).into(backdrop);
-        }
+        // Using Picasso Library for handle image loading and caching
+        // for more info look at Picasso reference http://square.github.io/picasso/
+        Picasso.with(getContext()).load(mMovie.mPoster).into(posterImageView);
+        Picasso.with(getContext()).load(mMovie.mBackdrop).into(backdrop);
 
         // Fetch trailers only if savedInstanceState == null
         if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_TRAILERS)) {
@@ -294,7 +291,7 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                Toast.makeText(getActivity(), mMovie.mTitle +" Added Into Favorite", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), mMovie.mTitle + " Added Into Favorite", Toast.LENGTH_LONG).show();
                 updateFavoriteButton();
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -316,7 +313,7 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                Toast.makeText(getActivity(), mMovie.mTitle +" Removed From Favorite", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), mMovie.mTitle + " Removed From Favorite", Toast.LENGTH_LONG).show();
                 updateFavoriteButton();
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

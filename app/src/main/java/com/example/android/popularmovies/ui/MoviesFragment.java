@@ -15,7 +15,6 @@
  */
 package com.example.android.popularmovies.ui;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -28,7 +27,6 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,6 +54,18 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     private String mMovieSort;
 
     private static final int CURSOR_LODER_ID = 0;
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(Movie movie);
+    }
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -190,10 +200,12 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void open(Movie movie, int position) {
-        Log.i("Movie", "open: "+ movie.mTitle);
-        Intent intent = new Intent(getActivity(), DetailActivity.class);
-        intent.putExtra(DetailFragment.MOVIE_ARGS, movie);
-        startActivity(intent);
+
+        ((Callback) getActivity()).onItemSelected(movie);
+//        Log.i("Movie", "open: "+ movie.mTitle);
+//        Intent intent = new Intent(getActivity(), DetailActivity.class);
+//        intent.putExtra(DetailFragment.MOVIE_ARGS, movie);
+//        startActivity(intent);
     }
 
 }
