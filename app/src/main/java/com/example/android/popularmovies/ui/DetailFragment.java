@@ -25,14 +25,10 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -66,7 +62,7 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
     public static final String EXTRA_TRAILERS = "EXTRA_TRAILERS";
     public static final String EXTRA_REVIEWS = "EXTRA_REVIEWS";
 
-    private ShareActionProvider mShare;
+    private Intent sharingIntent=null;
 
     private TrailerAdapter mTrailerAdapter;
     private ReviewAdapter mReviewAdapter;
@@ -75,6 +71,7 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
     RecyclerView mRecyclerReviews;
 
     private FloatingActionButton mFloat;
+    private FloatingActionButton mFloatShare;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -82,7 +79,6 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
         if (getArguments().containsKey(MOVIE_ARGS)) {
             mMovie = getArguments().getParcelable(MOVIE_ARGS);
         }
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -91,6 +87,7 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
         mFloat = (FloatingActionButton) rootView.findViewById(R.id.float_button);
+        mFloatShare = (FloatingActionButton) rootView.findViewById(R.id.fab_share);
 
         mRecyclerTrailers = (RecyclerView) rootView.findViewById(R.id.trailer_list);
         mRecyclerReviews = (RecyclerView) rootView.findViewById(R.id.review_recycler);
@@ -109,11 +106,6 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
         mRecyclerReviews.setLayoutManager(reviewLayoutManager);
         mReviewAdapter = new ReviewAdapter(new ArrayList<Review>(), this);
         mRecyclerReviews.setAdapter(mReviewAdapter);
-
-
-//        final Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-//        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-//        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         CollapsingToolbarLayout collapsingToolbar =
                 (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
@@ -160,15 +152,28 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
 
         updateFavoriteButton();
 
+        mFloatShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ShareVideo();
+            }
+        });
+
         return rootView;
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.detial_menu, menu);
-        MenuItem shareTrailerMenuItem = menu.findItem(R.id.share_trailer);
-        mShare = (ShareActionProvider) MenuItemCompat.getActionProvider(shareTrailerMenuItem);
+    private void ShareVideo(){
+
+        if(sharingIntent != null) {
+            Intent intent = Intent.createChooser(sharingIntent, "Share trailer via");
+
+            // We only start the activity if it resolves successfully
+            if (sharingIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                startActivity(intent);
+            } else {
+                Log.i("Share", "Couldn't share Video Trailer for key: ");
+            }
+        }
     }
 
     @Override
@@ -204,21 +209,19 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
     public void onFetchFinished(List<Trailer> trailers) {
 
         mTrailerAdapter.add(trailers);
-//        mButtonWatchTrailer.setEnabled(!trailers.isEmpty());
 
         if (mTrailerAdapter.getItemCount() > 0) {
             Trailer trailer = mTrailerAdapter.getTrailers().get(0);
-            updateShareActionProvider(trailer);
+            updateShareIntent(trailer);
         }
     }
 
-    private void updateShareActionProvider(Trailer trailer) {
-        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+    private void updateShareIntent(Trailer trailer) {
+        sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
         sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mMovie.mTitle);
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, trailer.getName() + ": "
                 + trailer.getTrailerUrl());
-        mShare.setShareIntent(sharingIntent);
     }
 
     @Override
