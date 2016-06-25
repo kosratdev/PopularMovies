@@ -105,21 +105,18 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
 
-        int numOfColoums = 0;
+        int numOfColumns;
         if (dpWidth < dpHeight) {
             // portrait mode
-            numOfColoums = 2;
-            if (dpWidth > 600) { // for tablet sw600
-                numOfColoums = 3;
+            numOfColumns = 2;
+            if (dpWidth >= 600) { // for tablet sw600
+                numOfColumns = 3;
             }
         } else {
             // landscape mode
-            numOfColoums = 3;
-            if (dpWidth > 600) { // for tablet sw600
-                numOfColoums = 3;
-            }
+            numOfColumns = 3;
         }
-        return numOfColoums;
+        return numOfColumns;
     }
 
     @Override
