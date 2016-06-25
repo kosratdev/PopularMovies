@@ -28,7 +28,7 @@
     <style name="detail_poster_styel">
         <item name="android:layout_width">150dp</item>
         <item name="android:layout_height">200dp</item>
-        <item name="android:src">@drawable/test_poster</item>
+        <item name="android:src">@drawable/temp_poster</item>
     </style>
     <!-- Movie rated and release date style -->
     <style name="detail_text_style">

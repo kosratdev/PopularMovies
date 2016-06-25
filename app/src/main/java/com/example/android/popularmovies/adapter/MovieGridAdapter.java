@@ -55,8 +55,8 @@ public class MovieGridAdapter
         if (!posterUrl.equals("")) {
             Picasso.with(context)
                     .load(posterUrl)
-                    .placeholder(R.drawable.test_poster) // before load an image
-                    .error(R.mipmap.ic_launcher) // at error of loading image
+                    .placeholder(R.drawable.temp_poster) // before load an image
+                    .error(R.drawable.temp_poster) // at error of loading image
                     .into(holder.mThumbnailView);
         }
 

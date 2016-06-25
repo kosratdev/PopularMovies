@@ -119,8 +119,17 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
 
         // Using Picasso Library for handle image loading and caching
         // for more info look at Picasso reference http://square.github.io/picasso/
-        Picasso.with(getContext()).load(mMovie.mPoster).into(posterImageView);
-        Picasso.with(getContext()).load(mMovie.mBackdrop).into(backdrop);
+        Picasso.with(getContext())
+                .load(mMovie.mPoster)
+                .placeholder(R.drawable.temp_poster) // before load an image
+                .error(R.drawable.temp_poster)
+                .into(posterImageView);
+
+        Picasso.with(getContext())
+                .load(mMovie.mBackdrop)
+                .placeholder(R.drawable.temp_poster) // before load an image
+                .error(R.drawable.temp_poster)
+                .into(backdrop);
 
         // Fetch trailers only if savedInstanceState == null
         if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_TRAILERS)) {
