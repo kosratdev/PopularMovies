@@ -24,7 +24,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.example.android.popularmovies.BuildConfig;
-import com.example.android.popularmovies.adapter.MovieGridAdapter;
+import com.example.android.popularmovies.adapter.MovieAdapter;
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.model.Movie;
 
@@ -51,9 +51,9 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
     private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
     private Context mContext;
-    private MovieGridAdapter mMovieAdapter;
+    private MovieAdapter mMovieAdapter;
 
-    public FetchMoviesTask(Context context, MovieGridAdapter movieAdapter) {
+    public FetchMoviesTask(Context context, MovieAdapter movieAdapter) {
         mContext = context;
         mMovieAdapter = movieAdapter;
     }

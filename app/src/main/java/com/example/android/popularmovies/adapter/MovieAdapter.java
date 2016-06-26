@@ -39,8 +39,8 @@ import butterknife.ButterKnife;
 /**
  * Created by kosrat on 6/22/16.
  */
-public class MovieGridAdapter
-        extends RecyclerView.Adapter<MovieGridAdapter.ViewHolder> {
+public class MovieAdapter
+        extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
 
     private final ArrayList<Movie> mMovies;
     private final Callbacks mCallbacks;
@@ -49,7 +49,7 @@ public class MovieGridAdapter
         void open(Movie movie, int position);
     }
 
-    public MovieGridAdapter(ArrayList<Movie> movies, Callbacks callbacks) {
+    public MovieAdapter(ArrayList<Movie> movies, Callbacks callbacks) {
         mMovies = movies;
         this.mCallbacks = callbacks;
     }

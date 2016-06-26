@@ -35,7 +35,7 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 
 import com.example.android.popularmovies.R;
-import com.example.android.popularmovies.adapter.MovieGridAdapter;
+import com.example.android.popularmovies.adapter.MovieAdapter;
 import com.example.android.popularmovies.data.MovieContract;
 import com.example.android.popularmovies.model.Movie;
 import com.example.android.popularmovies.network.FetchMoviesTask;
@@ -51,7 +51,7 @@ import butterknife.ButterKnife;
  * <p/>
  * Encapsulates fetching the movies and displaying it as a {@link GridView} layout.
  */
-public class MoviesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, MovieGridAdapter.Callbacks {
+public class MoviesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, MovieAdapter.Callbacks {
 
     private final String MOVIE_DATA = "movie_data";
     private final String MOVIE_SORT = "movie_sort";
@@ -77,7 +77,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
-    private MovieGridAdapter mAdapter;
+    private MovieAdapter mAdapter;
 
     @BindView(R.id.movie_recycler)
     RecyclerView mRecyclerView;
@@ -109,7 +109,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), getNumOfColumns()));
         // To avoid "E/RecyclerView: No adapter attached; skipping layout"
-        mAdapter = new MovieGridAdapter(new ArrayList<Movie>(), this);
+        mAdapter = new MovieAdapter(new ArrayList<Movie>(), this);
         mRecyclerView.setAdapter(mAdapter);
 
         mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
