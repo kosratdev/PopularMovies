@@ -76,9 +76,9 @@ public class MovieAdapter
         final Movie movie = mMovies.get(position);
         final Context context = holder.mView.getContext();
 
-        holder.mTitleView.setText(movie.mTitle);
+        holder.mTitleView.setText(movie.getTitle());
 
-        String posterUrl = movie.mPoster;
+        String posterUrl = movie.getPoster();
 
         if (!posterUrl.equals("")) {
             Picasso.with(context)

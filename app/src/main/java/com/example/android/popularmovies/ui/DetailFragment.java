@@ -124,22 +124,22 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
         mReviewAdapter = new ReviewAdapter(new ArrayList<Review>(), this);
         mRecyclerReviews.setAdapter(mReviewAdapter);
 
-        mCollapsingToolbar.setTitle(mMovie.mTitle);
+        mCollapsingToolbar.setTitle(mMovie.getTitle());
 
-        mMovieRelease.setText(mMovie.mReleaseDate);
-        mMovieRated.setText(mMovie.mRating);
-        mMovieOverview.setText(mMovie.mOverview);
+        mMovieRelease.setText(mMovie.getReleaseDate());
+        mMovieRated.setText(mMovie.getRating());
+        mMovieOverview.setText(mMovie.getOverview());
 
         // Using Picasso Library for handle image loading and caching
         // for more info look at Picasso reference http://square.github.io/picasso/
         Picasso.with(getContext())
-                .load(mMovie.mPoster)
+                .load(mMovie.getPoster())
                 .placeholder(R.drawable.temp_poster) // before load an image
                 .error(R.drawable.temp_poster)
                 .into(mMoviePoster);
 
         Picasso.with(getContext())
-                .load(mMovie.mBackdrop)
+                .load(mMovie.getBackdrop())
                 .placeholder(R.drawable.temp_poster) // before load an image
                 .error(R.drawable.temp_poster)
                 .into(mMovieBackdrop);
@@ -211,12 +211,12 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
 
     private void fetchTrailers() {
         FetchTrailersTask task = new FetchTrailersTask(this);
-        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mMovie.mId);
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mMovie.getId());
     }
 
     private void fetchReviews() {
         FetchReviewTask task = new FetchReviewTask(this);
-        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mMovie.mId);
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mMovie.getId());
     }
 
     @Override
@@ -233,7 +233,7 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
     private void updateShareIntent(Trailer trailer) {
         sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
-        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mMovie.mTitle);
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mMovie.getTitle());
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, trailer.getName() + ": "
                 + trailer.getTrailerUrl());
     }
@@ -262,7 +262,7 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
         Cursor movieCursor = getContext().getContentResolver().query(
                 MovieContract.MovieEntry.CONTENT_URI,
                 new String[]{MovieContract.MovieEntry.COLUMN_MOVIE_ID},
-                MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = " + mMovie.mId,
+                MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = " + mMovie.getId(),
                 null,
                 null);
 
@@ -285,19 +285,19 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
                 if (!isFavorite()) {
                     ContentValues movieValues = new ContentValues();
                     movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,
-                            mMovie.mId);
+                            mMovie.getId());
                     movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE,
-                            mMovie.mTitle);
+                            mMovie.getTitle());
                     movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER,
-                            mMovie.mPoster);
+                            mMovie.getPoster());
                     movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW,
-                            mMovie.mOverview);
+                            mMovie.getOverview());
                     movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RATED,
-                            mMovie.mRating);
+                            mMovie.getRating());
                     movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE,
-                            mMovie.mReleaseDate);
+                            mMovie.getReleaseDate());
                     movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_BACKDROP,
-                            mMovie.mBackdrop);
+                            mMovie.getBackdrop());
                     getContext().getContentResolver().insert(
                             MovieContract.MovieEntry.CONTENT_URI,
                             movieValues
@@ -308,7 +308,7 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                Toast.makeText(getActivity(), mMovie.mTitle + " Added Into Favorite", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), mMovie.getTitle() + " Added to Favorite", Toast.LENGTH_LONG).show();
                 updateFavoriteButton();
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -322,7 +322,7 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
             protected Void doInBackground(Void... params) {
                 if (isFavorite()) {
                     getContext().getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI,
-                            MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = " + mMovie.mId, null);
+                            MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = " + mMovie.getId(), null);
 
                 }
                 return null;
@@ -330,7 +330,7 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                Toast.makeText(getActivity(), mMovie.mTitle + " Removed From Favorite", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), mMovie.getTitle() + " Removed From Favorite", Toast.LENGTH_LONG).show();
                 updateFavoriteButton();
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
