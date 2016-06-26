@@ -54,12 +54,12 @@ import butterknife.ButterKnife;
 public class MoviesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
         MovieAdapter.Callbacks, FetchMoviesTask.Listener {
 
-    private final String MOVIE_DATA = "movie_data";
-    private final String MOVIE_SORT = "movie_sort";
+    private final String MOVIE_DATA = "MOVIE_DATA";
+    private final String MOVIE_SORT = "SORT_BY";
 
     private String mMovieSort;
 
-    private static final int CURSOR_LODER_ID = 0;
+    private static final int CURSOR_LOADER_ID = 0;
     private ActionBar mActionBar;
 
     /**
@@ -71,34 +71,13 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        public void onItemSelected(Movie movie);
+        void onItemSelected(Movie movie);
     }
 
-    /**
-     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-     * device.
-     */
     private MovieAdapter mAdapter;
 
     @BindView(R.id.movie_recycler)
     RecyclerView mRecyclerView;
-
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        ArrayList<Movie> movies = mAdapter.getMovies();
-        if (movies != null && !movies.isEmpty()) {
-            outState.putParcelableArrayList(MOVIE_DATA, movies);
-        }
-        outState.putString(MOVIE_SORT, mMovieSort);
-
-        // Needed to avoid confusion, when we back from detail screen (i. e. top rated selected but
-        // favorite movies are shown and onCreate was not called in this case).
-        if (!mMovieSort.equals(getString(R.string.pref_sort_favorites))) {
-            getLoaderManager().destroyLoader(CURSOR_LODER_ID);
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -119,6 +98,47 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         return rootView;
     }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        if (savedInstanceState != null) {
+            mMovieSort = savedInstanceState.getString(MOVIE_SORT);
+            if (savedInstanceState.containsKey(MOVIE_DATA)) {
+                List<Movie> movies = savedInstanceState.getParcelableArrayList(MOVIE_DATA);
+                mAdapter.add(movies);
+
+                // For listening content updates for tow pane mode
+                if (mMovieSort.equals(getString(R.string.pref_sort_favorites))) {
+                    getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+                }
+            }
+        } else {
+            // Fetch Movies only if savedInstanceState == null
+            fetchMovies(mMovieSort);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        ArrayList<Movie> movies = mAdapter.getMovies();
+        if (movies != null && !movies.isEmpty()) {
+            outState.putParcelableArrayList(MOVIE_DATA, movies);
+        }
+        outState.putString(MOVIE_SORT, mMovieSort);
+
+        // Needed to avoid confusion, when we back from detail screen (i. e. top rated selected but
+        // favorite movies are shown and onCreate was not called in this case).
+        if (!mMovieSort.equals(getString(R.string.pref_sort_favorites))) {
+            getLoaderManager().destroyLoader(CURSOR_LOADER_ID);
+        }
+    }
+
+    /**
+     * Getting Movie sort type to be the app title.
+     * @return Sort type
+     */
     private String getMovieTitle(){
         switch (getMovieSort()){
             case "popular":
@@ -129,6 +149,11 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
                 return "Favorites";
         }
     }
+
+    /**
+     * Change column number of recycle view automatically by depending on the running device
+     * @return number of columns
+     */
     public int getNumOfColumns() {
 
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
@@ -149,27 +174,10 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         return numOfColumns;
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        if (savedInstanceState != null) {
-            mMovieSort = savedInstanceState.getString(MOVIE_SORT);
-            if (savedInstanceState.containsKey(MOVIE_DATA)) {
-                List<Movie> movies = savedInstanceState.getParcelableArrayList(MOVIE_DATA);
-                mAdapter.add(movies);
-
-                // For listening content updates for tow pane mode
-                if (mMovieSort.equals(getString(R.string.pref_sort_favorites))) {
-                    getLoaderManager().initLoader(CURSOR_LODER_ID, null, this);
-                }
-            }
-        } else {
-            // Fetch Movies only if savedInstanceState == null
-            fetchMovies(mMovieSort);
-        }
-    }
-
+    /**
+     * Getting Movie sort type.
+     * @return Sort type
+     */
     private String getMovieSort() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         return preferences.getString(getString(R.string.pref_sort_key), getString(R.string.pref_sort_popular));
@@ -188,7 +196,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         if (!sort.equals(getString(R.string.pref_sort_favorites))) {
             new FetchMoviesTask(this).execute(sort);
         } else {
-            getLoaderManager().initLoader(CURSOR_LODER_ID, null, this);
+            getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
         }
     }
 
