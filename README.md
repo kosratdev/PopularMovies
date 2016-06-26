@@ -1,12 +1,10 @@
 # Popular Movie
 This is the P1 and P2 in Udacity's Android Developer Nanodegree. The purpose of this project was to built an app, optimized for tablets, to help users discover popular and highly rated movies on the web. It displays a scrolling grid of movie trailers, launches a details screen whenever a particular movie is selected, allows users to save favorites, play trailers, and read user reviews. This app utilizes core Android user interface components and fetches movie information using themoviedb.org web API.
 
-![Phone-main](/art/phone-main.png)
-![phone-detail](/art/phone-detail.png)
+
+<img width="40%" src="/art/phone-main.png" />   <img width="40%" src="/art/phone-detail.png" />
 
 ![tablet-landscape](/art/tablet-landscape.png)
-
-for more images click [here]("/art/")
 
 # TheMovieDb API Key is required
 App uses The Movie Database API. You have to enter your API key in order to run the app. You can create your own one very easy! https://www.themoviedb.org/account/signup?language=en-EN, and include the unique key for the build by adding the following line to [USER_HOME]/.gradle/gradle.properties
