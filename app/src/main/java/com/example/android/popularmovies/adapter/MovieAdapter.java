@@ -38,6 +38,10 @@ import butterknife.ButterKnife;
 
 /**
  * Created by kosrat on 6/22/16.
+ * Movie Recycle View Adapter.
+ * Provide a reference to the views for each data item
+ * Complex data items may need more than one view per item, and
+ * you provide access to all the views for a data item in a view holder
  */
 public class MovieAdapter
         extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
@@ -108,12 +112,22 @@ public class MovieAdapter
 
     }
 
+    /**
+     * Add the movie data to the view
+     * @param movies is the movie ArrayList to attach
+     * the view which is get from TheMovieDb API.
+     */
     public void add(List<Movie> movies) {
         mMovies.clear();
         mMovies.addAll(movies);
         notifyDataSetChanged();
     }
 
+    /**
+     * Add the movie data to the view
+     * @param cursor is the cursor to attach
+     * the view which is get from local database.
+     */
     public void add(Cursor cursor) {
         mMovies.clear();
         if (cursor != null && cursor.moveToFirst()) {
