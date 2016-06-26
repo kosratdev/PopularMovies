@@ -37,6 +37,10 @@ import butterknife.ButterKnife;
 
 /**
  * Created by kosrat on 6/23/16.
+ * Movie Trailer Recycle View Adapter.
+ * Provide a reference to the views for each data item
+ * Complex data items may need more than one view per item, and
+ * you provide access to all the views for a data item in a view holder
  */
 public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHolder> {
     @SuppressWarnings("unused")
@@ -45,6 +49,11 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
     private final ArrayList<Trailer> mTrailers;
     private final Callbacks mCallbacks;
 
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
     public interface Callbacks {
         void watch(Trailer trailer, int position);
     }
@@ -101,6 +110,9 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
         return mTrailers.size();
     }
 
+    /**
+     * Cache of the children views for a review list item.
+     */
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         @BindView(R.id.trailer_thumbnail)
@@ -114,6 +126,11 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
         }
     }
 
+    /**
+     * Add the movie data to the view
+     * @param trailers is the movie trailers ArrayList to attach
+     * the view which is get from TheMovieDb API.
+     */
     public void add(List<Trailer> trailers) {
         mTrailers.clear();
         mTrailers.addAll(trailers);

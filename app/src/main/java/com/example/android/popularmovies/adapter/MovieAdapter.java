@@ -49,6 +49,11 @@ public class MovieAdapter
     private final ArrayList<Movie> mMovies;
     private final Callbacks mCallbacks;
 
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
     public interface Callbacks {
         void open(Movie movie, int position);
     }
@@ -96,6 +101,9 @@ public class MovieAdapter
         return mMovies.size();
     }
 
+    /**
+     * Cache of the children views for a review list item.
+     */
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
 

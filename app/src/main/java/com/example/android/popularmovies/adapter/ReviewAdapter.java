@@ -32,12 +32,21 @@ import butterknife.ButterKnife;
 
 /**
  * Created by kosrat on 6/24/16.
+ * Movie Review Recycle View Adapter.
+ * Provide a reference to the views for each data item
+ * Complex data items may need more than one view per item, and
+ * you provide access to all the views for a data item in a view holder
  */
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder>{
 
     private Callback mCallback;
     private ArrayList<Review> mReviews;
 
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
     public interface Callback{
         void read(Review review, int position);
     }
@@ -77,6 +86,9 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         return mReviews.size();
     }
 
+    /**
+     * Cache of the children views for a review list item.
+     */
     public class ViewHolder extends RecyclerView.ViewHolder{
 
         private final View mView;
