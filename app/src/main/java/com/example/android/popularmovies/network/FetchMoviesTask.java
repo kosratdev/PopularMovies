@@ -16,189 +16,68 @@
 
 package com.example.android.popularmovies.network;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.example.android.popularmovies.BuildConfig;
-import com.example.android.popularmovies.adapter.MovieAdapter;
-import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.model.Movie;
+import com.example.android.popularmovies.model.Movies;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.ParseException;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by kosrat on 6/10/16.
- * /**
+ *
  * Getting movie data from themoviedb API by creating a new thread to work in background.
  */
-public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
+public class FetchMoviesTask extends AsyncTask<String, Void, List<Movie>> {
 
     private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
-    private Context mContext;
-    private MovieAdapter mMovieAdapter;
-
-    public FetchMoviesTask(Context context, MovieAdapter movieAdapter) {
-        mContext = context;
-        mMovieAdapter = movieAdapter;
-    }
+    public Listener mListener;
 
     /**
-     * Take the String representing the complete movie in JSON Format and
-     * pull out the data we need to construct the Strings needed for the wireframes.
-     * <p/>
-     * Fortunately parsing is easy:  constructor takes the JSON string and converts it
-     * into an Object hierarchy for us.
-     *
-     * @param movieJsonStr is a json string.
-     * @return an array of string
+     * Interface definition for a callback to be invoked when trailers are loaded.
      */
-    private Movie[] getMovieDataFromJson(String movieJsonStr)
-            throws JSONException, ParseException {
+    public interface Listener{
+        void onMovieFetchFinished(List<Movie> movies);
+    }
 
-        // Base image url that is used to get movie posters which is describes in this reference
-        // http://docs.themoviedb.apiary.io/#reference/configuration/configuration/get?console=1
-        final String BASE_POSTER_PATH = "http://image.tmdb.org/t/p/w500/";
-
-        // These are the names of the JSON objects that need to be extracted.
-        final String TMD_LIST = "results";
-        final String TMD_ID = "id";
-        final String TMD_BACKDROP = "backdrop_path";
-        final String TMD_TITLE = "original_title";
-        final String TMD_POSTER = "poster_path";
-        final String TMD_OVERVIEW = "overview";
-        final String TMD_RATE = "vote_average";
-        final String TMD_RELEASE = "release_date";
-
-        JSONObject movieJson = new JSONObject(movieJsonStr);
-        JSONArray movieArray = movieJson.getJSONArray(TMD_LIST);
-
-        Movie[] allMovies = new Movie[movieArray.length()];
-
-        for (int i = 0; i < movieArray.length(); i++) {
-            int id;
-            String backdrop;
-            String title;
-            String poster;
-            String overview;
-            String rate;
-            String release;
-
-            // Get the JSON object representing a movie
-            JSONObject aMovie = movieArray.getJSONObject(i);
-
-            // Get all properties of the movie.
-            id = aMovie.getInt(TMD_ID);
-            backdrop = BASE_POSTER_PATH + aMovie.getString(TMD_BACKDROP);
-            title = aMovie.getString(TMD_TITLE);
-            poster = BASE_POSTER_PATH + aMovie.getString(TMD_POSTER);
-            overview = aMovie.getString(TMD_OVERVIEW);
-            rate = aMovie.getString(TMD_RATE);
-            release = aMovie.getString(TMD_RELEASE);
-
-            allMovies[i] = new Movie(id, backdrop, title, poster, overview, rate, release);
-        }
-
-        return allMovies;
-
+    public FetchMoviesTask(Listener listener){
+        mListener = listener;
     }
 
     @Override
-    protected Movie[] doInBackground(Void... params) {
+    protected List<Movie> doInBackground(String... params) {
 
-        // These two need to be declared outside the try/catch
-        // so that they can be closed in the finally block.
-        HttpURLConnection urlConnection = null;
-        BufferedReader reader = null;
-
-        // Will contain the raw JSON response as a string.
-        String movieJsonStr = null;
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-        String sortType = preferences.getString(mContext.getString(R.string.pref_sort_key),
-                mContext.getString(R.string.pref_sort_popular));
-        try {
-            // Construct the URL for the TheMovieDb query
-            // Possible parameters are available at https://www.themoviedb.org/documentation/api
-            final String MOVIE_BASE_URL = "https://api.themoviedb.org/3/movie/" + sortType;
-
-            final String API_PARAM = "api_key";
-
-            Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
-                    .appendQueryParameter(API_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
-                    .build();
-            Log.i(LOG_TAG, builtUri.toString());
-
-            URL url = new URL(builtUri.toString());
-
-            // Create the request to TheMovieDb, and open the connection
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.connect();
-
-            // Read the input stream into a String
-            InputStream inputStream = urlConnection.getInputStream();
-            StringBuilder builder = new StringBuilder();
-            if (inputStream == null) {
-                // Nothing to do.
-                return null;
-            }
-            reader = new BufferedReader(new InputStreamReader(inputStream));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                // But it does make debugging a *lot* easier if you print out the completed
-                // buffer for debugging.
-                builder.append(line).append("\n");
-            }
-
-            if (builder.length() == 0) {
-                // Stream was empty.  No point in parsing.
-                return null;
-            }
-            movieJsonStr = builder.toString();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "Error ", e);
-            // If the code didn't successfully get the weather data, there's no point in attempting
-            // to parse it.
+        if(params.length == 0){
             return null;
-        } finally {
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (final IOException e) {
-                    Log.e(LOG_TAG, "Error closing stream", e);
-                }
-            }
         }
 
+        String sortType=params[0];
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://api.themoviedb.org/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        MovieTaskService movieService = retrofit.create(MovieTaskService.class);
+        Call<Movies> call = movieService.discoverMovies(sortType, BuildConfig.THE_MOVIE_DB_API_KEY);
 
         try {
-            return getMovieDataFromJson(movieJsonStr);
-        } catch (JSONException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
+            Response<Movies> response = call.execute();
+            Movies movies = response.body();
+
+            return movies.getMovies();
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "A problem occurred talking to the movie db ", e);
         }
 
         // This will only happen if there was an error getting or parsing the movie.
@@ -206,9 +85,11 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Movie[]> {
     }
 
     @Override
-    protected void onPostExecute(Movie[] movies) {
-        if (movies != null) {
-            mMovieAdapter.add(Arrays.asList(movies));
+    protected void onPostExecute(List<Movie> movies) {
+        if(movies != null){
+            mListener.onMovieFetchFinished(movies);
+        }else{
+            mListener.onMovieFetchFinished(new ArrayList<Movie>());
         }
     }
 }

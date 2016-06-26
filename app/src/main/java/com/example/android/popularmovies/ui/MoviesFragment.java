@@ -51,7 +51,8 @@ import butterknife.ButterKnife;
  * <p/>
  * Encapsulates fetching the movies and displaying it as a {@link GridView} layout.
  */
-public class MoviesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, MovieAdapter.Callbacks {
+public class MoviesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
+        MovieAdapter.Callbacks, FetchMoviesTask.Listener {
 
     private final String MOVIE_DATA = "movie_data";
     private final String MOVIE_SORT = "movie_sort";
@@ -174,13 +175,18 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         return preferences.getString(getString(R.string.pref_sort_key), getString(R.string.pref_sort_popular));
     }
 
+    @Override
+    public void onMovieFetchFinished(List<Movie> movies) {
+        mAdapter.add(movies);
+    }
+
     /**
      * update movie posters by getting data from themoviedb API
      */
     private void fetchMovies(String sort) {
 
         if (!sort.equals(getString(R.string.pref_sort_favorites))) {
-            new FetchMoviesTask(getActivity(), mAdapter).execute();
+            new FetchMoviesTask(this).execute(sort);
         } else {
             getLoaderManager().initLoader(CURSOR_LODER_ID, null, this);
         }

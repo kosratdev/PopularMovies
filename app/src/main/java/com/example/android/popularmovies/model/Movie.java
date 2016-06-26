@@ -18,6 +18,8 @@ package com.example.android.popularmovies.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by kosrat on 6/2/16.
  *
@@ -25,28 +27,52 @@ import android.os.Parcelable;
  */
 public class Movie implements Parcelable{
 
-    public long mId;
-    public String mTitle;
-    public String mPoster;
-    public String mOverview;
-    public String mRating;
-    public String mReleaseDate;
-    public String mBackdrop;
-
-    public Movie(long id, String backdrop, String title, String poster, String overview, String rating, String releaseDate) {
-        this.mId = id;
-        this.mBackdrop = backdrop;
-        this.mTitle = title;
-        this.mPoster = poster;
-        this.mOverview = overview;
-        this.mRating = rating;
-        this.mReleaseDate = releaseDate;
-    }
+    @SerializedName("id")
+    private long mId;
+    @SerializedName("original_title")
+    private String mTitle;
+    @SerializedName("poster_path")
+    private String mPoster;
+    @SerializedName("overview")
+    private String mOverview;
+    @SerializedName("vote_average")
+    private String mRating;
+    @SerializedName("release_date")
+    private String mReleaseDate;
+    @SerializedName("backdrop_path")
+    private String mBackdrop;
 
     public Movie(){
 
     }
 
+    public long getmId() {
+        return mId;
+    }
+
+    public String getmTitle() {
+        return mTitle;
+    }
+
+    public String getmPoster() {
+        return mPoster;
+    }
+
+    public String getmOverview() {
+        return mOverview;
+    }
+
+    public String getmRating() {
+        return mRating;
+    }
+
+    public String getmReleaseDate() {
+        return mReleaseDate;
+    }
+
+    public String getmBackdrop() {
+        return mBackdrop;
+    }
 
     @Override
     public int describeContents() {
