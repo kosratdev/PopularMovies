@@ -46,31 +46,31 @@ public class Movie implements Parcelable{
 
     }
 
-    public long getmId() {
+    public long getId() {
         return mId;
     }
 
-    public String getmTitle() {
+    public String getTitle() {
         return mTitle;
     }
 
-    public String getmPoster() {
+    public String getPoster() {
         return mPoster;
     }
 
-    public String getmOverview() {
+    public String getOverview() {
         return mOverview;
     }
 
-    public String getmRating() {
+    public String getRating() {
         return mRating;
     }
 
-    public String getmReleaseDate() {
+    public String getReleaseDate() {
         return mReleaseDate;
     }
 
-    public String getmBackdrop() {
+    public String getBackdrop() {
         return mBackdrop;
     }
 
