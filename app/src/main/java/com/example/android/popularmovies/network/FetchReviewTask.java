@@ -34,6 +34,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by kosrat on 6/24/16.
+ *
+ * Getting review of a movie from themoviedb API by creating a new thread to work in background.
  */
 public class FetchReviewTask extends AsyncTask<Long , Void, List<Review>> {
 

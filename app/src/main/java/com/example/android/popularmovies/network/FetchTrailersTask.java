@@ -34,6 +34,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by kosrat on 6/23/16.
+ *
+ * Getting trailers of a movie from themoviedb API by creating a new thread to work in background.
  */
 public class FetchTrailersTask extends AsyncTask<Long, Void, List<Trailer>> {
 
