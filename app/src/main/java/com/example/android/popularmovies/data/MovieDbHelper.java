@@ -24,16 +24,17 @@ import com.example.android.popularmovies.data.MovieContract.MovieEntry;
 
 /**
  * Created by kosrat on 6/9/16.
+ * Manages a local database for favorite movie data.
  */
 public class MovieDbHelper extends SQLiteOpenHelper {
 
     // if you change the database schema, you must increment the database version
-    private static final int DATABSE_VERSION = 1;
+    private static final int DATABASE_VERSION = 1;
 
     static final String DATABASE_NAME = "move.db";
 
     public MovieDbHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABSE_VERSION);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
