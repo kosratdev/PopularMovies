@@ -129,7 +129,6 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
         mMovieRelease.setText(mMovie.getReleaseDate());
         mMovieRated.setText(mMovie.getRating());
         mMovieOverview.setText(mMovie.getOverview());
-
         // Using Picasso Library for handle image loading and caching
         // for more info look at Picasso reference http://square.github.io/picasso/
         Picasso.with(getContext())
@@ -137,7 +136,6 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
                 .placeholder(R.drawable.temp_poster) // before load an image
                 .error(R.drawable.temp_poster)
                 .into(mMoviePoster);
-
         Picasso.with(getContext())
                 .load(mMovie.getBackdrop())
                 .placeholder(R.drawable.temp_poster) // before load an image
@@ -148,7 +146,6 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
         if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_TRAILERS)) {
             List<Trailer> trailers = savedInstanceState.getParcelableArrayList(EXTRA_TRAILERS);
             mTrailerAdapter.add(trailers);
-//            mButtonWatchTrailer.setEnabled(true);
         } else {
             fetchTrailers();
         }
@@ -166,6 +163,9 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
         return rootView;
     }
 
+    /**
+     * Make favorite movies by inserting to the local database.
+     */
     @OnClick(R.id.float_button)
     public void makeAsFavorite(){
         if (isFavorite()) {
@@ -175,6 +175,9 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
         }
     }
 
+    /**
+     * Share first trailer of a movie.
+     */
     @OnClick(R.id.fab_share)
     public void ShareVideo(){
 
@@ -209,11 +212,17 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(trailer.getTrailerUrl())));
     }
 
+    /**
+     * Fetching Trailers of a movie by creating a background task;
+     */
     private void fetchTrailers() {
         FetchTrailersTask task = new FetchTrailersTask(this);
         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mMovie.getId());
     }
 
+    /**
+     * Fetching Reviews of a movie by creating a background task;
+     */
     private void fetchReviews() {
         FetchReviewTask task = new FetchReviewTask(this);
         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mMovie.getId());
@@ -248,6 +257,9 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(review.getUrl())));
     }
 
+    /**
+     * Update favorite icon
+     */
     private void updateFavoriteButton() {
 
         if (isFavorite()) {
@@ -257,6 +269,10 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
         }
     }
 
+    /**
+     * Checking the local database to know the movie is favorite or not.
+     * @return true or false to indicate is it favorite or not.
+     */
     private boolean isFavorite() {
 
         Cursor movieCursor = getContext().getContentResolver().query(
@@ -276,6 +292,9 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
 
     }
 
+    /**
+     * Adding a movie to favorite by inserting to the local database.
+     */
     private void makeFavorite() {
 
         new AsyncTask<Void, Void, Void>() {
@@ -314,6 +333,9 @@ public class DetailFragment extends Fragment implements TrailerAdapter.Callbacks
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    /**
+     * Removing a movie from favorite by deleting in the local database.
+     */
     private void removeFavorite() {
 
         new AsyncTask<Void, Void, Void>() {
