@@ -65,7 +65,10 @@ public class Movie implements Parcelable{
     }
 
     public String getPoster() {
-        return mPoster;
+        if (mPoster != null && !mPoster.isEmpty()) {
+            return "http://image.tmdb.org/t/p/w500/" + mPoster;
+        }
+        return null;
     }
 
     public String getOverview() {
@@ -81,7 +84,10 @@ public class Movie implements Parcelable{
     }
 
     public String getBackdrop() {
-        return mBackdrop;
+        if (mBackdrop != null && !mBackdrop.isEmpty()) {
+            return "http://image.tmdb.org/t/p/w500/" + mBackdrop;
+        }
+        return null;
     }
 
     @Override
