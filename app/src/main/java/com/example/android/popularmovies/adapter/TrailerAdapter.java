@@ -94,6 +94,8 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
 
         Picasso.with(context)
                 .load(thumbnailUrl)
+                .placeholder(R.drawable.temp_poster) // before load an image
+                .error(R.drawable.temp_poster) // at error of loading image
                 .config(Bitmap.Config.RGB_565)
                 .into(holder.mThumbnailView);
 
